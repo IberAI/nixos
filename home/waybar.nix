@@ -3,7 +3,13 @@
 {
   programs.waybar = {
     enable = true;
-    systemd.enable = true;
+
+    # Use systemd managed Waybar (recommended for Sway+systemd)
+    systemd = {
+      enable = true;
+      target = "sway-session.target";
+      after = [ "sway-session.target" ];
+    };
 
     settings = {
       mainBar = {
@@ -15,39 +21,69 @@
         modules-center = [ "clock" "window" ];
         modules-right  = [ "cpu" "memory" "network" "battery" ];
 
+        ###############################
+        # WORKSPACES
+        ###############################
         "sway/workspaces" = {
           disable-scroll = true;
           format = "{name}";
         };
 
+        ###############################
+        # CLOCK
+        ###############################
         clock = {
           format = "{:%Y-%m-%d %H:%M}";
           tooltip-format = "{:%A, %d %B %Y}";
         };
 
+        ###############################
+        # FOCUSED WINDOW
+        ###############################
         window = {
-          format = "Focused: {title}";
-          tooltip-format = "Focused window: {title}";
+          format = "  {title}";
+          tooltip-format = "Focused: {title}";
         };
 
+        ###############################
+        # CPU
+        ###############################
         cpu = {
           format = "CPU {usage}%";
+          interval = 3;
         };
 
+        ###############################
+        # MEMORY
+        ###############################
         memory = {
           format = "RAM {used:0.1f}G/{total:0.1f}G";
+          interval = 3;
         };
 
+        ###############################
+        # NETWORK
+        ###############################
         network = {
-          format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
-          format-ethernet     = "Ethernet: {ifname}";
-          format-disconnected = "Network: Disconnected";
+          interval = 5;
+          format-wifi         = "  {essid} {signalStrength}%";
+          format-ethernet     = "  {ifname}";
+          format-disconnected = "󰤭  Offline";
         };
 
+        ###############################
+        # BATTERY  (FIXED & RELIABLE)
+        ###############################
         battery = {
-          format           = "Battery: {percentage}%";
-          format-charging  = "Battery: {percentage}% (Charging)";
-          format-plugged   = "Battery: {percentage}% (Plugged In)";
+          # Change these if needed:
+          bat = "BAT0";        # ← your battery name
+          adapter = "AC";      # ← your AC adapter name
+
+          interval = 5;
+          format = "󰁹  {percentage}%";
+          format-charging  = "󰂄  {percentage}%";
+          format-plugged   = "  {percentage}%";
+
           states = {
             warning  = 30;
             critical = 15;
@@ -56,6 +92,9 @@
       };
     };
 
+    ########################################
+    # CSS styling
+    ########################################
     style = ''
       * {
         font-family: "DejaVu Sans Mono", monospace;
@@ -86,9 +125,7 @@
         padding: 0 8px;
       }
 
-      #window {
-        margin-left: 10px;
-      }
+      #window { margin-left: 10px; }
     '';
   };
 }
