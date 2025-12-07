@@ -97,9 +97,13 @@ in
       ##################################
       # Autostart
       ##################################
-      exec = [
-        "waybar"   # <-- RELIABLE WAYBAR STARTUP
+      startup = [
+        {
+          command = "waybar";
+          always = true;   # restart waybar when you reload sway
+        }
       ];
+
     };
   };
 

@@ -14,132 +14,129 @@
         name = "default";
         isDefault = true;
 
+        #############################
+        # General LibreWolf settings
+        #############################
         settings = {
-          # Homepage -> DuckDuckGo instead of Searx
-          "browser.startup.homepage" = "https://duckduckgo.com/";
+          "browser.startup.homepage" = "https://duckduckgo.com";
+          "browser.shell.checkDefaultBrowser" = false;
 
-          # Use KeePassXC, not built-in password manager
-          "signon.rememberSignons" = false;
+          # Disable some telemetry / annoyances
+          "datareporting.healthreport.uploadEnabled" = false;
+          "datareporting.policy.dataSubmissionEnabled" = false;
+          "browser.newtabpage.activity-stream.feeds.topsites" = false;
+          "browser.newtabpage.activity-stream.showSponsored" = false;
 
-          # Optional: fewer search suggestions in the URL bar
-          "browser.urlbar.suggest.searches" = false;
+          # Example: dark theme preference
+          "ui.systemUsesDarkTheme" = 1;
         };
 
-        # Custom search engines
+        #####################
+        # Search engines
+        #####################
         search = {
           force = true;
 
-          # Default -> DuckDuckGo
-          default = "DuckDuckGo";
-
-          # Remove Searx from order
-          order = [ "DuckDuckGo" "Google" ];
+          # Use engine IDs, not names
+          default = "ddg";
+          order   = [ "ddg" "google" ];
 
           engines = {
+            # Custom: Nix Packages search
             "Nix Packages" = {
               urls = [{
                 template = "https://search.nixos.org/packages";
                 params = [
-                  { name = "type"; value = "packages"; }
+                  { name = "type";  value = "packages"; }
                   { name = "query"; value = "{searchTerms}"; }
                 ];
               }];
-              icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               definedAliases = [ "@np" ];
             };
 
+            # Custom: NixOS Wiki search
             "NixOS Wiki" = {
               urls = [{
-                template = "https://nixos.wiki/index.php?search={searchTerms}";
+                template = "https://nixos.wiki/index.php";
+                params = [
+                  { name = "search"; value = "{searchTerms}"; }
+                ];
               }];
-              iconUpdateURL = "https://nixos.wiki/favicon.png";
-              updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@nw" ];
             };
 
-            "DuckDuckGo" = {
+            # DuckDuckGo, referenced by id "ddg"
+            ddg = {
               urls = [{
-                template = "https://duckduckgo.com/?q={searchTerms}&t=h_";
+                template = "https://duckduckgo.com/";
+                params = [
+                  { name = "q"; value = "{searchTerms}"; }
+                  { name = "t"; value = "h_"; }
+                ];
               }];
-              iconUpdateURL = "https://duckduckgo.com/favicon.ico";
+              iconUpdateURL  = "https://duckduckgo.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@ddg" ];
             };
           };
         };
 
-        # Bookmarks: shortcuts + Docs folder with School subfolder
-        bookmarks = [
-          # Links
-          {
-            name = "ChatGPT";
-            url = "https://chat.openai.com/";
-            keyword = "cgpt";
-            tags = [ "ai" ];
-          }
-          {
-            name = "Discord";
-            url = "https://discord.com/app";
-            keyword = "dc";
-            tags = [ "chat" "social" ];
-          }
-          {
-            name = "YouTube";
-            url = "https://www.youtube.com/";
-            keyword = "yt";
-            tags = [ "video" ];
-          }
+        #####################
+        # Bookmarks
+        #####################
+        # New submodule shape: { force = true; settings = [ ... ]; }
+        bookmarks = {
+          force = true;
+          settings = [
+            # Simple top-level bookmarks
+            {
+              name = "ChatGPT";
+              url = "https://chat.openai.com/";
+              keyword = "cgpt";
+              tags = [ "ai" ];
+            }
+            {
+              name = "NixOS Search";
+              url = "https://search.nixos.org/";
+              keyword = "nix";
+              tags = [ "nix" "nixos" ];
+            }
+            {
+              name = "NixOS Wiki";
+              url = "https://nixos.wiki/";
+              keyword = "nixw";
+              tags = [ "nix" "docs" ];
+            }
 
-          # Docs folder
-          {
-            name = "Docs";
+            # Example folder with sub-bookmarks
+            {
+              name = "Docs";
+              toolbar = true;
+              bookmarks = [
+                {
+                  name = "LibreWolf Docs";
+                  url = "https://librewolf.net/docs/";
+                }
+                {
+                  name = "KeePassXC Docs";
+                  url = "https://keepassxc.org/docs/";
+                }
+              ];
+            }
+          ];
+        };
 
-            # Subfolders inside Docs
-            bookmarks = [
-              {
-                name = "School";
-                bookmarks = [
-                  {
-                    name = "School Homepage";
-                    url = "https://www.schoolswebsite.com/";
-                    keyword = "schoolhome";
-                    tags = [ "education" ];
-                  }
-                  {
-                    name = "Lecture Notes";
-                    url = "https://www.schoolswebsite.com/lecture-notes";
-                    keyword = "lectures";
-                    tags = [ "education" "notes" ];
-                  }
-                ];
-              }
-              {
-                name = "Personal";
-                bookmarks = [
-                  {
-                    name = "GitHub";
-                    url = "https://github.com/";
-                    keyword = "github";
-                    tags = [ "development" "coding" ];
-                  }
-                  {
-                    name = "Google Drive";
-                    url = "https://drive.google.com/";
-                    keyword = "gdrive";
-                    tags = [ "cloud" "storage" ];
-                  }
-                ];
-              }
-            ];
-          }
-        ];
-
-        # Extensions: uBlock Origin + KeePassXC browser + Decentraleyes
-        extensions = with pkgs.nur.repos.rycee.firefox-addons; [
-          ublock-origin
-          keepassxc-browser
-          decentraleyes
-        ];
+        #####################
+        # Extensions
+        #####################
+        # New shape: extensions = { packages = [ ... ]; }
+        extensions = {
+          packages = with pkgs.nur.repos.rycee.firefox-addons; [
+            ublock-origin
+            keepassxc-browser
+            decentraleyes
+          ];
+        };
       };
     };
   };
