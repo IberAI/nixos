@@ -74,7 +74,7 @@
                   { name = "t"; value = "h_"; }
                 ];
               }];
-              iconUpdateURL  = "https://duckduckgo.com/favicon.ico";
+              icon = "https://duckduckgo.com/favicon.ico";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@ddg" ];
             };

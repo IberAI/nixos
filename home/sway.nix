@@ -62,13 +62,9 @@ in
               "exec ${pkgs.swaylock-effects}/bin/swaylock -f -c 000000";
 
             # Screenshot (region → file + clipboard)
-            "${mod}+p" = ''
-              exec ${pkgs.bash}/bin/sh -c '
-                FILE="$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png"
-                ${pkgs.grim}/bin/grim -g "$(${pkgs.slurp}/bin/slurp)" "$FILE"
-                ${pkgs.wl-clipboard}/bin/wl-copy < "$FILE"
-              '
-            '';
+            "${mod}+p" =
+              "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
+
 
             # Output navigation
             "${mod}+a"        = "focus output left";
