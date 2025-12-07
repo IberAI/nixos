@@ -16,13 +16,13 @@
         position = "top";
         height = 28;
 
-        # Module layout
+        # Modules
         modules-left   = [ "sway/workspaces" ];
         modules-center = [ "clock" "window" ];
         modules-right  = [ "cpu" "memory" "network" "battery" "notifications" ];
 
         #######################
-        # Modules configuration
+        # Module configs
         #######################
 
         "sway/workspaces" = {
@@ -51,6 +51,8 @@
         };
 
         network = {
+          # Let Waybar auto-detect interfaces
+          interface = "*";
           interval = 3;
           format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
           format-ethernet     = "Ethernet: {ifname}";
@@ -58,21 +60,23 @@
         };
 
         battery = {
-          bat = "BAT0";      # check /sys/class/power_supply/
+          bat = "BAT0";        # check /sys/class/power_supply/
           adapter = "AC";
           interval = 5;
           format = "Battery: {percentage}%";
           format-charging  = "Battery: {percentage}% (Charging)";
+          format-full      = "Battery: {percentage}%";
           format-plugged   = "Battery: {percentage}% (Plugged In)";
+          tooltip = true;
           states = { warning = 30; critical = 15; };
         };
 
         notifications = {
-          exec = "${pkgs.dunst}/bin/dunstctl count";  # number of unread notifications
+          exec = "${pkgs.dunst}/bin/dunstctl count || echo 0";  # fallback 0
           interval = 5;
           format = "Notifications: {output}";
           tooltip = true;
-          click-left = "${pkgs.dunst}/bin/dunstctl history"; # view history on click
+          click-left = "${pkgs.dunst}/bin/dunstctl history";
         };
       };
     };
