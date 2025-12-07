@@ -4,9 +4,9 @@
   programs.waybar = {
     enable = true;
 
-    # Use systemd user service to start Waybar automatically
     systemd = {
       enable = true;
+      # For Sway + Wayland user session
       target = "sway-session.target";
     };
 
@@ -16,14 +16,9 @@
         position = "top";
         height = 28;
 
-        # Modules
         modules-left   = [ "sway/workspaces" ];
-        modules-center = [ "clock" "window" ];
-        modules-right  = [ "cpu" "memory" "network" "battery" "notifications" ];
-
-        #######################
-        # Module configs
-        #######################
+        modules-center = [ "clock" ];
+        modules-right  = [ "cpu" "memory" "network" "battery" ];
 
         "sway/workspaces" = {
           disable-scroll = true;
@@ -32,12 +27,6 @@
 
         clock = {
           format = "{:%Y-%m-%d %H:%M}";
-          tooltip-format = "{:%A, %d %B %Y}";
-        };
-
-        window = {
-          format = "Focused: {title}";
-          tooltip-format = "Focused window: {title}";
         };
 
         cpu = {
@@ -51,32 +40,21 @@
         };
 
         network = {
-          # Let Waybar auto-detect interfaces
-          interface = "*";
-          interval = 3;
-          format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
-          format-ethernet     = "Ethernet: {ifname}";
+          # Remove interface override: let Waybar pick default
+          interval = 5;
+          format-ethernet = "Ethernet: {ifname}";
+          format-wifi     = "Wi-Fi: {essid} {signalStrength}%";
           format-disconnected = "Network: Disconnected";
         };
 
         battery = {
-          bat = "BAT0";        # check /sys/class/power_supply/
+          bat = "BAT0";
           adapter = "AC";
-          interval = 5;
+          interval = 10;
           format = "Battery: {percentage}%";
-          format-charging  = "Battery: {percentage}% (Charging)";
-          format-full      = "Battery: {percentage}%";
-          format-plugged   = "Battery: {percentage}% (Plugged In)";
-          tooltip = true;
+          format-charging = "Battery: {percentage}% (Charging)";
+          format-plugged  = "Battery: {percentage}% (Plugged In)";
           states = { warning = 30; critical = 15; };
-        };
-
-        notifications = {
-          exec = "${pkgs.dunst}/bin/dunstctl count || echo 0";  # fallback 0
-          interval = 5;
-          format = "Notifications: {output}";
-          tooltip = true;
-          click-left = "${pkgs.dunst}/bin/dunstctl history";
         };
       };
     };
@@ -84,10 +62,9 @@
     style = ''
       * { font-family: "DejaVu Sans Mono", monospace; font-size: 11px; }
       window#waybar { background: rgba(0,0,0,0.85); color: #ffffff; }
-      #workspaces button { padding: 0 6px; color: #aaaaaa; }
+      #clock,#cpu,#memory,#network,#battery,#workspaces button { padding: 0 6px; }
       #workspaces button.focused { color: #ffffff; border-bottom: 2px solid #ffffff; }
-      #clock,#cpu,#memory,#network,#battery,#window,#notifications { padding: 0 8px; }
-      #window { margin-left: 10px; }
+      #clock,#cpu,#memory,#network,#battery { padding: 0 8px; }
     '';
   };
 }
