@@ -3,7 +3,7 @@
 {
   programs.waybar = {
     enable = true;
-    systemd.enable = true;  # start via systemd user service
+    systemd.enable = true;
 
     settings = {
       mainBar = {
@@ -11,60 +11,40 @@
         position = "top";
         height = 28;
 
-        # left/center/right module layout
         modules-left   = [ "sway/workspaces" ];
-        modules-center = [ "clock" "focused_window" ];
-        modules-right  = [ "cpu" "memory" "network" "bluetooth" "battery" ];
-
-        ########################
-        # Modules configuration
-        ########################
+        modules-center = [ "clock" "window" ];
+        modules-right  = [ "cpu" "memory" "network" "battery" ];
 
         "sway/workspaces" = {
           disable-scroll = true;
           format = "{name}";
         };
 
-        "clock" = {
-          # Example: 2025-12-07 14:32
+        clock = {
           format = "{:%Y-%m-%d %H:%M}";
           tooltip-format = "{:%A, %d %B %Y}";
         };
 
-        "focused_window" = {
-          # Display the name of the currently focused window
-          format = "Focused: {name}";
-          tooltip-format = "Currently focused window: {name}";
+        window = {
+          format = "Focused: {title}";
+          tooltip-format = "Focused window: {title}";
         };
 
-        "cpu" = {
+        cpu = {
           format = "CPU {usage}%";
-          tooltip = true;
         };
 
-        "memory" = {
+        memory = {
           format = "RAM {used:0.1f}G/{total:0.1f}G";
-          tooltip = true;
         };
 
-        "network" = {
-          # Let waybar auto-detect; override interface if needed
-          format-wifi          = "Wi-Fi: {essid} {signalStrength}%";
-          format-ethernet      = "Ethernet: {ifname}";
-          format-disconnected  = "Network: Disconnected";
-          tooltip = true;
+        network = {
+          format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
+          format-ethernet     = "Ethernet: {ifname}";
+          format-disconnected = "Network: Disconnected";
         };
 
-        "bluetooth" = {
-          format              = "Bluetooth: {status}";
-          format-off          = "Bluetooth: Off";
-          format-on           = "Bluetooth: On";
-          format-connected    = "Bluetooth: Connected to {num_connections} devices";
-          tooltip-format      = "{status}";
-          tooltip-format-connected = "Connected: {device_alias}";
-        };
-
-        "battery" = {
+        battery = {
           format           = "Battery: {percentage}%";
           format-charging  = "Battery: {percentage}% (Charging)";
           format-plugged   = "Battery: {percentage}% (Plugged In)";
@@ -72,12 +52,10 @@
             warning  = 30;
             critical = 15;
           };
-          tooltip = true;
         };
       };
     };
 
-    # Simple default styling
     style = ''
       * {
         font-family: "DejaVu Sans Mono", monospace;
@@ -85,7 +63,7 @@
       }
 
       window#waybar {
-        background: rgba(0, 0, 0, 0.85);
+        background: rgba(0,0,0,0.85);
         color: #ffffff;
       }
 
@@ -103,14 +81,13 @@
       #cpu,
       #memory,
       #network,
-      #bluetooth,
       #battery,
-      #focused_window {
+      #window {
         padding: 0 8px;
       }
 
-      #focused_window {
-        margin-left: 10px;  # Slightly separate the focused window text from the clock
+      #window {
+        margin-left: 10px;
       }
     '';
   };

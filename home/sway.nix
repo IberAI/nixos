@@ -93,13 +93,6 @@ in
       ##################################
       # Autostart
       ##################################
-      startup = [
-        {
-          command = "waybar";
-          always = true;   # restart waybar when you reload sway
-        }
-      ];
-
     };
   };
 
