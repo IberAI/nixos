@@ -4,11 +4,10 @@
   programs.waybar = {
     enable = true;
 
-    # Use systemd managed Waybar (recommended for Sway+systemd)
+    # Start Waybar automatically under sway-session
     systemd = {
       enable = true;
       target = "sway-session.target";
-      after = [ "sway-session.target" ];
     };
 
     settings = {
@@ -21,65 +20,66 @@
         modules-center = [ "clock" "window" ];
         modules-right  = [ "cpu" "memory" "network" "battery" ];
 
-        ###############################
+        #############################################
         # WORKSPACES
-        ###############################
+        #############################################
         "sway/workspaces" = {
           disable-scroll = true;
           format = "{name}";
         };
 
-        ###############################
+        #############################################
         # CLOCK
-        ###############################
+        #############################################
         clock = {
           format = "{:%Y-%m-%d %H:%M}";
           tooltip-format = "{:%A, %d %B %Y}";
         };
 
-        ###############################
+        #############################################
         # FOCUSED WINDOW
-        ###############################
+        #############################################
         window = {
           format = "  {title}";
-          tooltip-format = "Focused: {title}";
+          tooltip-format = "Focused window: {title}";
         };
 
-        ###############################
+        #############################################
         # CPU
-        ###############################
+        #############################################
         cpu = {
           format = "CPU {usage}%";
-          interval = 3;
+          interval = 2;
         };
 
-        ###############################
+        #############################################
         # MEMORY
-        ###############################
+        #############################################
         memory = {
           format = "RAM {used:0.1f}G/{total:0.1f}G";
-          interval = 3;
+          interval = 2;
         };
 
-        ###############################
+        #############################################
         # NETWORK
-        ###############################
+        #############################################
         network = {
-          interval = 5;
+          interval = 3;
           format-wifi         = "  {essid} {signalStrength}%";
           format-ethernet     = "  {ifname}";
           format-disconnected = "󰤭  Offline";
         };
 
-        ###############################
-        # BATTERY  (FIXED & RELIABLE)
-        ###############################
+        #############################################
+        # BATTERY  (your device: BAT0, AC)
+        #############################################
         battery = {
-          # Change these if needed:
-          bat = "BAT0";        # ← your battery name
-          adapter = "AC";      # ← your AC adapter name
+          bat = "BAT0";
+          adapter = "AC";
 
           interval = 5;
+
+          # Icons from Nerd Fonts
           format = "󰁹  {percentage}%";
           format-charging  = "󰂄  {percentage}%";
           format-plugged   = "  {percentage}%";
@@ -92,9 +92,9 @@
       };
     };
 
-    ########################################
-    # CSS styling
-    ########################################
+    #############################################
+    # CSS STYLE
+    #############################################
     style = ''
       * {
         font-family: "DejaVu Sans Mono", monospace;
@@ -125,7 +125,9 @@
         padding: 0 8px;
       }
 
-      #window { margin-left: 10px; }
+      #window {
+        margin-left: 10px;
+      }
     '';
   };
 }
