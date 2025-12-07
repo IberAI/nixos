@@ -73,7 +73,7 @@
           # Links
           {
             name = "ChatGPT";
-            url = "https://chatgpt.com/";
+            url = "https://chat.openai.com/";
             keyword = "cgpt";
             tags = [ "ai" ];
           }
@@ -98,18 +98,43 @@
             bookmarks = [
               {
                 name = "School";
-                bookmarks = [ ];
+                bookmarks = [
+                  {
+                    name = "School Homepage";
+                    url = "https://www.schoolswebsite.com/";
+                    keyword = "schoolhome";
+                    tags = [ "education" ];
+                  }
+                  {
+                    name = "Lecture Notes";
+                    url = "https://www.schoolswebsite.com/lecture-notes";
+                    keyword = "lectures";
+                    tags = [ "education" "notes" ];
+                  }
+                ];
               }
               {
                 name = "Personal";
-                bookmarks = [ ];
+                bookmarks = [
+                  {
+                    name = "GitHub";
+                    url = "https://github.com/";
+                    keyword = "github";
+                    tags = [ "development" "coding" ];
+                  }
+                  {
+                    name = "Google Drive";
+                    url = "https://drive.google.com/";
+                    keyword = "gdrive";
+                    tags = [ "cloud" "storage" ];
+                  }
+                ];
               }
             ];
           }
         ];
 
         # Extensions: uBlock Origin + KeePassXC browser + Decentraleyes
-        # (assumes pkgs.nur.repos.rycee.firefox-addons is available)
         extensions = with pkgs.nur.repos.rycee.firefox-addons; [
           ublock-origin
           keepassxc-browser
