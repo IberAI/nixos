@@ -17,7 +17,8 @@
   ];
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
-
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
   ########################################
   # Bootloader
   ########################################
@@ -161,7 +162,7 @@
     slurp             # region selection
     wl-clipboard      # clipboard (wl-copy / wl-paste)
     wf-recorder       # screen recording
-
+    udiskie
     # theming / cursors
     adwaita-icon-theme
 
