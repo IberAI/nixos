@@ -48,12 +48,11 @@
           keepassxc-browser
           decentraleyes
           canvasblocker
-          # Note: not including cookie-autodelete to avoid interference
         ];
       };
     };
 
-    extraPolicies = {
+    policies = {
       # Cookie whitelist for login functionality
       Cookies = {
         Allow = [
@@ -69,7 +68,6 @@
         ];
       };
 
-      # Bookmarks — adds them directly to the toolbar/menu
       Bookmarks = [
         { Title = "ChatGPT"; URL = "https://chat.openai.com"; Placement = "toolbar"; }
         { Title = "Gmail";   URL = "https://mail.google.com";   Placement = "toolbar"; }
@@ -77,9 +75,8 @@
         { Title = "Discord"; URL = "https://discord.com/app";   Placement = "toolbar"; }
         # add more as needed...
       ];
-
-      # Optionally show the bookmarks toolbar by default
-      DisplayBookmarksToolbar = "always";
+      DisableTelemetry = true;
+      DisableFireFoxStudies = true;
     };
   };
 }
