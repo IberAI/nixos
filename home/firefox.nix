@@ -9,7 +9,7 @@
     nativeMessagingHosts = [ pkgs.keepassxc ];
 
     ################################################
-    # Global LibreWolf prefs (very strict but usable)
+    # Global LibreWolf prefs (strict but usable)
     ################################################
     settings = {
       # Use strict content blocking / Total Cookie Protection
@@ -182,7 +182,32 @@
           keepassxc-browser
           decentraleyes
           canvasblocker
-          cookie-autodelete   # <-- key for “only login cookies”
+        ];
+      };
+    };
+
+    # Policies to allow specific cookies for login purposes
+    extraPolicies = {
+      Bookmarks = bookmarks;
+      ExtensionSettings = extensions;
+
+      Cookies = {
+        Allow = [
+          "https://discord.com"
+          "https://www.youtube.com"
+          "https://mail.google.com"
+          "https://chat.openai.com"
+          "https://play.google.com"
+          "https://console.cloud.google.com"
+          "https://accounts.google.com"
+          "https://developer.apple.com"
+          "https://account.apple.com"
+        ];
+      };
+
+      EnableTrackingProtection = {
+        Exceptions = [
+          # Add any domains here that need exceptions for tracking protection
         ];
       };
     };
