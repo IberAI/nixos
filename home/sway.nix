@@ -63,14 +63,40 @@ in
 
             # Screenshot (region → file + clipboard)
             "${mod}+p" =
-              "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
-
+              "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin.slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
 
             # Output navigation
             "${mod}+a"        = "focus output left";
             "${mod}+d"        = "focus output right";
             "${mod}+Shift+a"  = "move container to output left";
             "${mod}+Shift+d"  = "move container to output right";
+
+            ##################################
+            # Hardware keys: audio, media, brightness
+            ##################################
+
+            # Volume (speaker)
+            "XF86AudioMute"        = "exec ${pkgs.pamixer}/bin/pamixer -t";
+            "XF86AudioLowerVolume" = "exec ${pkgs.pamixer}/bin/pamixer -d 5";
+            "XF86AudioRaiseVolume" = "exec ${pkgs.pamixer}/bin/pamixer -i 5";
+
+            # Also bind plain F10–F12 like old config
+            "F10"                  = "exec ${pkgs.pamixer}/bin/pamixer -t";
+            "F11"                  = "exec ${pkgs.pamixer}/bin/pamixer -d 5";
+            "F12"                  = "exec ${pkgs.pamixer}/bin/pamixer -i 5";
+
+            # Microphone mute toggle
+            "XF86AudioMicMute"     = "exec ${pkgs.pamixer}/bin/pamixer --default-source -t";
+
+            # Media control
+            "XF86AudioPlay"        = "exec ${pkgs.playerctl}/bin/playerctl play-pause";
+            "XF86AudioPause"       = "exec ${pkgs.playerctl}/bin/playerctl play-pause";
+            "XF86AudioNext"        = "exec ${pkgs.playerctl}/bin/playerctl next";
+            "XF86AudioPrev"        = "exec ${pkgs.playerctl}/bin/playerctl previous";
+
+            # Brightness control
+            "XF86MonBrightnessUp"   = "exec ${pkgs.brightnessctl}/bin/brightnessctl set +5%";
+            "XF86MonBrightnessDown" = "exec ${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
           };
 
       ##################################
@@ -106,6 +132,10 @@ in
     slurp
     wl-clipboard
     swaylock-effects
+
+    pamixer
+    brightnessctl
+    playerctl
   ];
 
   #############################
