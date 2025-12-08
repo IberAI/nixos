@@ -172,10 +172,6 @@
           ];
         };
 
-        #####################
-        # WebRTC for Discord
-        #####################
-        settings."media.peerconnection.enabled" = true;  # Enable WebRTC for Discord to function correctly (screen sharing)
       };
     };
   };
