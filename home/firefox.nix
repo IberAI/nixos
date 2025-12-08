@@ -3,7 +3,7 @@
 {
   programs.librewolf = {
     enable = true;
-    package = pkgs.librewolf;  # run LibreWolf, configured via this module
+    package = pkgs.librewolf;
 
     # Make KeePassXC available as a native messaging host for LibreWolf
     nativeMessagingHosts = [ pkgs.keepassxc ];
@@ -29,6 +29,20 @@
 
           # Example: dark theme preference
           "ui.systemUsesDarkTheme" = 1;
+
+          # Anti-fingerprinting settings
+          "privacy.resistFingerprinting" = true;
+          "privacy.firstparty.isolate" = true;
+          "privacy.trackingprotection.fingerprinting.enabled" = true;
+
+          # Disable WebRTC (for privacy, but we will enable for Discord below)
+          "media.peerconnection.enabled" = false;  # Default is disabled for privacy
+
+          # Prevent IP leakage (disable WebRTC globally)
+          "media.peerconnection.enabled" = false;
+
+          # Prevent browser's location sharing
+          "geo.enabled" = false;
         };
 
         #####################
@@ -42,29 +56,6 @@
           order = [ "ddg" "google" ];
 
           engines = {
-            # Custom: Nix Packages search
-            "Nix Packages" = {
-              urls = [{
-                template = "https://search.nixos.org/packages";
-                params = [
-                  { name = "type"; value = "packages"; }
-                  { name = "query"; value = "{searchTerms}"; }
-                ];
-              }];
-              definedAliases = [ "@np" ];
-            };
-
-            # Custom: NixOS Wiki search
-            "NixOS Wiki" = {
-              urls = [{
-                template = "https://nixos.wiki/index.php";
-                params = [
-                  { name = "search"; value = "{searchTerms}"; }
-                ];
-              }];
-              definedAliases = [ "@nw" ];
-            };
-
             # DuckDuckGo, referenced by id "ddg"
             ddg = {
               urls = [{
@@ -145,8 +136,46 @@
             ublock-origin
             keepassxc-browser
             decentraleyes
+            canvasblocker        # Block canvas fingerprinting
           ];
         };
+
+        #####################
+        # Cookies settings for Google, YouTube, ChatGPT, Discord
+        #####################
+        settings = rec {
+          # Allow cookies for Google, YouTube, ChatGPT, and Discord
+          "network.cookie.cookieBehavior" = 0; # Accept all cookies by default
+          "network.cookie.lifetimePolicy" = 2; # Accept cookies until the browser closes
+          
+          # Whitelist these domains to retain cookies:
+          "network.cookie.acceptCookiePolicy" = 1;
+          "network.cookie.allowGoogle" = true;
+          "network.cookie.allowYoutube" = true;
+          "network.cookie.allowChatGPT" = true;
+          "network.cookie.allowDiscord" = true;
+
+          # Prevent other cookies from staying
+          "privacy.sanitize.sanitizeOnShutdown" = true;
+          "privacy.clearOnShutdown.cookies" = true;
+          "privacy.clearOnShutdown.cache" = true;
+          "privacy.clearOnShutdown.sessions" = true;
+
+          # Keep the cookies for specific sites
+          "network.cookie.domain.include" = [
+            "accounts.google.com"
+            "google.com"
+            "youtube.com"
+            "youtube-nocookie.com"
+            "chat.openai.com"
+            "discord.com"
+          ];
+        };
+
+        #####################
+        # WebRTC for Discord
+        #####################
+        settings."media.peerconnection.enabled" = true;  # Enable WebRTC for Discord to function correctly (screen sharing)
       };
     };
   };
