@@ -19,7 +19,7 @@ in
     iniFormat.generate "keepassxc.ini" {
       Browser = {
         # Same as ticking “Enable browser integration” in the GUI
-        Enabled = true;
+        Enabled = "true";
 
         # Optional nice defaults:
         # SearchInAllDatabases = true;
