@@ -35,11 +35,7 @@
           "privacy.firstparty.isolate" = true;
           "privacy.trackingprotection.fingerprinting.enabled" = true;
 
-          # Disable WebRTC (for privacy, but we will enable for Discord below)
-          "media.peerconnection.enabled" = false;  # Default is disabled for privacy
-
-          # Prevent IP leakage (disable WebRTC globally)
-          "media.peerconnection.enabled" = false;
+          "media.peerconnection.enabled" = true;  
 
           # Prevent browser's location sharing
           "geo.enabled" = false;
