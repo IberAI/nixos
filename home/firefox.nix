@@ -39,7 +39,7 @@
 
           # Use engine IDs, not names
           default = "ddg";
-          order   = [ "ddg" "google" ];
+          order = [ "ddg" "google" ];
 
           engines = {
             # Custom: Nix Packages search
@@ -47,7 +47,7 @@
               urls = [{
                 template = "https://search.nixos.org/packages";
                 params = [
-                  { name = "type";  value = "packages"; }
+                  { name = "type"; value = "packages"; }
                   { name = "query"; value = "{searchTerms}"; }
                 ];
               }];
@@ -78,13 +78,24 @@
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@ddg" ];
             };
+
+            # Google search engine, added as fallback
+            google = {
+              urls = [{
+                template = "https://www.google.com/search";
+                params = [
+                  { name = "q"; value = "{searchTerms}"; }
+                ];
+              }];
+              icon = "https://www.google.com/favicon.ico";
+              definedAliases = [ "@google" ];
+            };
           };
         };
 
         #####################
         # Bookmarks
         #####################
-        # New submodule shape: { force = true; settings = [ ... ]; }
         bookmarks = {
           force = true;
           settings = [
@@ -129,7 +140,6 @@
         #####################
         # Extensions
         #####################
-        # New shape: extensions = { packages = [ ... ]; }
         extensions = {
           packages = with pkgs.nur.repos.rycee.firefox-addons; [
             ublock-origin
