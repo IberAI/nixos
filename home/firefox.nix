@@ -19,41 +19,40 @@
     };
 
     profiles.default = {
-      id        = 0;
-      name      = "default";
-      isDefault = true;
 
+      # Per-profile Firefox prefs
       settings = {
         "browser.startup.homepage" = "https://duckduckgo.com";
         "browser.shell.checkDefaultBrowser" = false;
+
         "datareporting.healthreport.uploadEnabled" = false;
         "datareporting.policy.dataSubmissionEnabled" = false;
+
         "browser.newtabpage.activity-stream.feeds.topsites" = false;
         "browser.newtabpage.activity-stream.showSponsored" = false;
+
         "ui.systemUsesDarkTheme" = 1;
 
         "privacy.resistFingerprinting" = true;
         "privacy.trackingprotection.fingerprinting.enabled" = true;
-        "privacy.trackingprotection.cryptomining.enabled" = true;
-        "privacy.trackingprotection.enabled" = true;
+        "privacy.trackingprotection.cryptomining.enabled"   = true;
+        "privacy.trackingprotection.enabled"                 = true;
 
         "privacy.firstparty.isolate" = false;
         "media.peerconnection.enabled" = true;
         "geo.enabled" = false;
       };
 
-      extensions = {
-        packages = with pkgs.nur.repos.rycee.firefox-addons; [
-          ublock-origin
-          keepassxc-browser
-          decentraleyes
-          canvasblocker
-        ];
-      };
+      # Extensions for this profile
+      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+        ublock-origin
+        keepassxc-browser
+        decentraleyes
+        canvasblocker
+      ];
     };
 
     policies = {
-      # Cookie whitelist for login functionality
       Cookies = {
         Allow = [
           "https://discord.com"
@@ -69,14 +68,30 @@
       };
 
       Bookmarks = [
-        { Title = "ChatGPT"; URL = "https://chat.openai.com"; Placement = "toolbar"; }
-        { Title = "Gmail";   URL = "https://mail.google.com";   Placement = "toolbar"; }
-        { Title = "YouTube"; URL = "https://www.youtube.com";   Placement = "toolbar"; }
-        { Title = "Discord"; URL = "https://discord.com/app";   Placement = "toolbar"; }
-        # add more as needed...
+        {
+          Title = "ChatGPT";
+          URL = "https://chat.openai.com";
+          Placement = "toolbar";
+        }
+        {
+          Title = "Gmail";
+          URL = "https://mail.google.com";
+          Placement = "toolbar";
+        }
+        {
+          Title = "YouTube";
+          URL = "https://www.youtube.com";
+          Placement = "toolbar";
+        }
+        {
+          Title = "Discord";
+          URL = "https://discord.com/app";
+          Placement = "toolbar";
+        }
       ];
+
       DisableTelemetry = true;
-      DisableFireFoxStudies = true;
+      DisableFirefoxStudies = true;
     };
   };
 }
