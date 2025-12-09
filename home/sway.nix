@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  mod = "Mod4";                    # Super
+  mod = "Mod4";  # Super
   toString = builtins.toString;
 in
 {
@@ -20,7 +20,9 @@ in
       modifier = mod;
 
       terminal = "${pkgs.kitty}/bin/kitty";
-      menu     = "${pkgs.rofi}/bin/rofi -show drun";
+
+      # Use rofi-wayland as the default menu (Mod+d)
+      menu     = "${pkgs.rofi-wayland}/bin/rofi -show drun";
 
       ##################################
       # Input devices
@@ -49,7 +51,10 @@ in
           {
             # Apps
             "${mod}+t" = "exec ${pkgs.kitty}/bin/kitty";
-            "${mod}+r" = "exec ${pkgs.rofi}/bin/rofi -show drun";
+
+            # Explicit rofi-wayland launcher on Mod+r
+            "${mod}+r" = "exec ${pkgs.rofi-wayland}/bin/rofi -show drun";
+
             "${mod}+f" = "exec ${pkgs.librewolf}/bin/librewolf";
 
             # Window management
@@ -63,7 +68,7 @@ in
 
             # Screenshot (region → file + clipboard)
             "${mod}+p" =
-              "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin.slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
+              "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
 
             # Output navigation
             "${mod}+a"        = "focus output left";
@@ -80,7 +85,6 @@ in
             "XF86AudioLowerVolume" = "exec ${pkgs.pamixer}/bin/pamixer -d 5";
             "XF86AudioRaiseVolume" = "exec ${pkgs.pamixer}/bin/pamixer -i 5";
 
-            # Also bind plain F10–F12 like old config
             "F10"                  = "exec ${pkgs.pamixer}/bin/pamixer -t";
             "F11"                  = "exec ${pkgs.pamixer}/bin/pamixer -d 5";
             "F12"                  = "exec ${pkgs.pamixer}/bin/pamixer -i 5";
@@ -117,7 +121,7 @@ in
       };
 
       ##################################
-      # Autostart
+      # (you can add bars, gaps, etc. here later)
       ##################################
     };
   };
@@ -127,7 +131,7 @@ in
   #############################
   home.packages = with pkgs; [
     kitty
-    rofi
+    rofi-wayland
     grim
     slurp
     wl-clipboard
@@ -142,9 +146,8 @@ in
   # Environment variables
   #############################
   home.sessionVariables = {
-    GTK_USE_PORTAL = "1";  # better GTK behaviour on Wayland
-    MOZ_ENABLE_WAYLAND = "1";  # Firefox/Librewolf Wayland support
-    QT_QPA_PLATFORM = "wayland";  # Qt apps on Wayland
+    GTK_USE_PORTAL      = "1";  # better GTK behaviour on Wayland
+    MOZ_ENABLE_WAYLAND  = "1";  # Firefox/Librewolf Wayland support
+    QT_QPA_PLATFORM     = "wayland";  # Qt apps on Wayland
   };
 }
-
