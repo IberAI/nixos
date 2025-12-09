@@ -30,17 +30,25 @@
 
         network = {
           interval = 5;
-          format-ethernet  = "Ethernet: {ifname}";
-          format-wifi      = "Wi-Fi: {essid} {signalStrength}%";
+          format-ethernet     = "Ethernet: {ifname}";
+          format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
           format-disconnected = "Network: Disconnected";
         };
 
         battery = {
-          bat     = "BAT0";
-          adapter = "AC";
+          bat      = "BAT0";
+          adapter  = "AC";
           interval = 30;
-          states = { warning = 30; critical = 15; };
-          format  = "{capacity}%";
+          states   = { warning = 30; critical = 15; };
+
+          # Default / fallback
+          format = "{capacity}%";
+
+          # Different text per state
+          format-charging    = "{capacity}% charging";
+          format-discharging = "{capacity}% discharging";
+          format-full        = "{capacity}% full";
+          format-plugged     = "{capacity}% plugged";
         };
       };
     };

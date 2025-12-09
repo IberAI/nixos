@@ -17,6 +17,7 @@
     ./home/emacs.nix
     ./home/keepassxc.nix
     ./home/nvchad.nix
+    ./home/dunst.nix
   ];
 
   ############################
