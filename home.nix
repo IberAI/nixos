@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   # Match this to your installation / HM version (you can keep 25.11 if you like)
@@ -16,6 +16,7 @@
     ./home/waybar.nix
     ./home/emacs.nix
     ./home/keepassxc.nix
+    ./home/nvchad.nix
   ];
 
   ############################

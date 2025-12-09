@@ -22,6 +22,11 @@
       url = "github:Echinoidea/Aporetic-Nerd-Font";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix4nvchad = {
+      url = "github:nix-community/nix4nvchad";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = { self, nixpkgs, home-manager, nur, aporetic-font, ... } @ inputs:
