@@ -6,8 +6,7 @@
   ########################
   services.ssh-agent = {
     enable = true;
-    # No shell-specific integration options – your HM version
-    # doesn’t have enableBashIntegration/enableZshIntegration.
+    # Keep it simple – your HM version may not have integration toggles.
   };
 
   ########################
@@ -18,17 +17,21 @@
     package = pkgs.openssh;
 
     matchBlocks = {
-      # GitHub over SSH
       "github.com" = {
         hostname       = "github.com";
         user           = "git";
 
-        # Your key we fixed earlier
+        # Your SSH key
         identityFile   = [ "~/.ssh/id_ed25519" ];
         identitiesOnly = true;
 
-        # Automatically add key to ssh-agent when used
-        addKeysToAgent = "yes";
+        # Extra raw ssh_config options for this host
+        # This becomes:
+        #   Host github.com
+        #     AddKeysToAgent yes
+        extraOptions = {
+          AddKeysToAgent = "yes";
+        };
       };
     };
   };
