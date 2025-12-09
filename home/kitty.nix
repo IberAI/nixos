@@ -5,7 +5,13 @@
     enable = true;
     font.name = "Maple Mono NF";
     font.size = 10;
-    shellIntegration.enableZshIntegration = true;
+
+    # You said you use fish now, so:
+    shellIntegration = {
+      enableFishIntegration = true;
+      # enableZshIntegration = true;  # you can keep/remove this if you still use zsh
+    };
+
     settings = {
       # Remove confirm close message
       confirm_os_window_close = 0;
@@ -14,28 +20,31 @@
       enable_audio_bell = false;
       window_padding_width = 4;
 
-      active_border_color = "#5cedaa";
+      active_border_color   = "#5cedaa";
       inactive_border_color = "#b2d9c2";
+
+      # First entry becomes default
+      enabled_layouts = "tall:bias=70;full_size=1,grid,fat,horizontal,vertical";
     };
 
     keybindings = {
       # Tab management
       "ctrl+shift+t" = "new_tab";
       "ctrl+shift+q" = "close_tab";
-      "alt+shift+l" = "next_tab";
-      "alt+shift+h" = "previous_tab";
-      "ctrl+." = "move_tab_forward";
-      "ctrl+comma" = "move_tab_backward";
+      "alt+shift+l"  = "next_tab";
+      "alt+shift+h"  = "previous_tab";
+      "ctrl+."       = "move_tab_forward";
+      "ctrl+comma"   = "move_tab_backward";
 
       # Window/split management
       "ctrl+shift+enter" = "new_window";
-      "ctrl+w" = "close_window";
-      "ctrl+]" = "next_window";
-      "ctrl+[" = "previous_window";
+      "ctrl+w"           = "close_window";
+      "ctrl+]"           = "next_window";
+      "ctrl+["           = "previous_window";
 
       # Split windows
-      "ctrl+shift+minus" = "launch --location=hsplit --cwd=current";
-      "ctrl+shift+backslash" = "launch --location=vsplit --cwd=current";
+      "ctrl+shift+minus"      = "launch --location=hsplit --cwd=current";
+      "ctrl+shift+backslash"  = "launch --location=vsplit --cwd=current";
 
       # Navigate splits
       "ctrl+shift+k" = "neighboring_window up";
@@ -48,6 +57,9 @@
 
       "ctrl+shift+space" =
         "pipe @screen_scrollback overlay vim - -c 'set filetype=scrollback' -c 'source ~/.config/vim/ftplugin/scrollback.vim'";
+
+      # 🔁 Optional: quickly re-apply tall 70/30 if needed
+      "ctrl+alt+t" = "goto_layout tall:bias=70;full_size=1";
     };
 
     extraConfig = ''
