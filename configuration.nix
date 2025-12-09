@@ -170,7 +170,6 @@
     # Your main apps
     ####################
     keepassxc
-    neovim
     emacs
     wireshark
     kicad
@@ -245,7 +244,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-
+    extraSpecialArgs = { inherit inputs; };
     # Load full declarative user/Sway configuration
     users.iber = import ./home.nix;
   };
