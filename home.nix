@@ -18,6 +18,7 @@
     ./home/keepassxc.nix
     ./home/nvchad.nix
     ./home/dunst.nix
+    ./home/ssh.nix
   ];
 
   ############################

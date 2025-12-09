@@ -1,13 +1,24 @@
 { config, pkgs, ... }:
 
 {
-  programs.git = {
+  # Make sure gpg is available
+  programs.gpg = {
     enable = true;
+  };
+
+  programs.git = {
+    enable  = true;
     package = pkgs.git;
 
     # Basic identity
     userName  = "IberAI";
     userEmail = "ilteber.dover@gmail.com";
+
+    # Sign all commits with your GPG key
+    signing = {
+      key = "05AA4F0A904C41E5D4206BFCF167B7A3106DE448";
+      signByDefault = true;
+    };
 
     # Handy aliases
     aliases = {
@@ -22,49 +33,41 @@
 
     # Extra git config (good sane defaults)
     extraConfig = {
-      # New repos use "main" as the default branch
       init.defaultBranch = "main";
 
-      # Colors & diffs
       color.ui = "auto";
       diff.colorMoved = "default";
 
-      # Editor & line endings
       core = {
-        editor   = "nvim";   # change to "vim" or "nano" if you prefer
-        autocrlf = "input";  # safe for Linux, avoids CRLF hell
+        editor   = "nvim";
+        autocrlf = "input";
       };
 
-      # Pull / rebase behavior
       pull = {
-        rebase = true;   # `git pull` will rebase by default
-        ff     = "only"; # refuse non-fast-forward merges on pull
+        rebase = true;
+        ff     = "only";
       };
 
-      rebase.autoStash = true; # stash/unstash automatically when rebasing
+      rebase.autoStash = true;
 
-      # Push behavior
       push = {
-        default    = "simple"; # safe default
-        followTags = true;     # push annotated tags that point to pushed commits
+        default    = "simple";
+        followTags = true;
       };
 
-      # Merge behavior
       merge = {
-        ff             = "only";  # no implicit merge commits on `git merge`
-        conflictStyle  = "zdiff3"; # nicer conflict markers (if your git supports it)
+        ff            = "only";
+        conflictStyle = "zdiff3";
       };
 
-      # Small QoL
-      help.autocorrect = 10;                 # typo correction after 1s
-      credential.helper = "cache --timeout=3600"; # keep creds in memory for 1 hour
-    };
+      help.autocorrect  = 10;
+      credential.helper = "cache --timeout=3600";
 
-    # If you later add a GPG key, you can enable this:
-    # signing = {
-    #   key = "YOUR-GPG-KEY-ID";
-    #   signByDefault = true;
-    # };
+      # Use gpg for signing
+      gpg.program = "gpg";
+
+      # Also sign tags by default (nice for releases)
+      tag.gpgSign = true;
+    };
   };
 }
-
