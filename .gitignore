@@ -1,3 +1,77 @@
+############################
+# Nix / NixOS / Home Manager
+############################
+
+# Nix build symlinks
+result
+result-*
+
+# Common Home Manager build symlinks
+home-manager-path
+home-path
+
+# If you ever copy these into the repo by mistake
+.nixos-*-backup
+
+#############
+# direnv
+#############
+
 .direnv/
+.envrc.local
 .envrc
-nil.json
+# (Keep .envrc itself tracked if it just has `use flake` etc.)
+
+#############
+# Logs
+#############
+
+*.log
+*.log.*
+
+#####################
+# Editors & IDE junk
+#####################
+
+# Vim / Neovim
+*~
+*.swp
+*.swo
+
+# Emacs
+\#*\#
+.\#*
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# Other editor project files
+*.iml
+
+#####################
+# OS-specific trash
+#####################
+
+.DS_Store
+Thumbs.db
+
+#####################
+# Generic dev stuff
+#####################
+
+# Node / JS
+node_modules/
+dist/
+build/
+
+# Rust
+target/
+
+# Python
+__pycache__/
+*.py[cod]
+.env/
+.venv/
