@@ -6,12 +6,8 @@
   ########################
   services.ssh-agent = {
     enable = true;
-
-    # Integrate with common shells so SSH_AUTH_SOCK is set
-    enableBashIntegration = true;
-    enableZshIntegration  = true;
-    # enableFishIntegration   = true;
-    # enableNushellIntegration = true;
+    # No shell-specific integration options – your HM version
+    # doesn’t have enableBashIntegration/enableZshIntegration.
   };
 
   ########################
@@ -21,12 +17,13 @@
     enable  = true;
     package = pkgs.openssh;
 
-    # Per-host config
     matchBlocks = {
-      # Special rules for GitHub
+      # GitHub over SSH
       "github.com" = {
         hostname       = "github.com";
         user           = "git";
+
+        # Your key we fixed earlier
         identityFile   = [ "~/.ssh/id_ed25519" ];
         identitiesOnly = true;
 
