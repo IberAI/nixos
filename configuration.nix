@@ -199,7 +199,7 @@
     rust-analyzer       # Rust language server (for NVChad / LSP)
 
     nodejs              # Node.js + npm (for React Native / Expo, JS tooling)
-
+    deno
     ####################
     # Basic tools
     ####################
