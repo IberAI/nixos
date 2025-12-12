@@ -10,7 +10,6 @@
   programs.librewolf = {
     enable  = true;
     package = pkgs.librewolf;
-
     nativeMessagingHosts = [ pkgs.keepassxc ];
   };
 }

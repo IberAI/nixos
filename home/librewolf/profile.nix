@@ -18,53 +18,73 @@
       "browser.newtabpage.activity-stream.showSponsored"         = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
       "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
-
       # Telemetry off.
       "datareporting.healthreport.uploadEnabled"   = false;
       "datareporting.policy.dataSubmissionEnabled" = false;
     };
+    ##################################################################
+    # Containers
+    ##################################################################
+    containersForce = true;
+    containers = {
+      "default" = {
+        id = 0;
+        name = "Default (Fun)";
+        color = "blue";
+      };
+      "work" = {
+        id = 1;
+        name = "Work";
+        color = "green";
+      };
+      "school" = {
+        id = 2;
+        name = "School";
+        color = "orange";
+      };
+    };
+
 
     ##################################################################
-    # Bookmarks 
-    ##################################################################   
+    # Bookmarks
+    ##################################################################
     bookmarks = {
       force = true;
 
       settings = [
         {
-          name    = "Toolbar";
+          # A real folder node that goes on the bookmarks toolbar
+          name = "Toolbar";
           toolbar = true;
 
-          bookmarks =
-            let
-              entry = name: url: { inherit name url; };
-              folder = name: bookmarks: { inherit name bookmarks; };
-            in
-            [
-              (entry "Discord" "https://discord.com/channels/@me")
-              (entry "YouTube" "https://youtube.com/")
-              (entry "GitHub" "https://github.com/")
-              (entry "ChatGPT" "https://chatgpt.com/")
+          bookmarks = [
+            { name = "Discord"; url = "https://discord.com/channels/@me"; }
+            { name = "YouTube"; url = "https://youtube.com/"; }
+            { name = "GitHub";  url = "https://github.com/"; }
+            { name = "ChatGPT"; url = "https://chatgpt.com/"; }
+            {
+              name = "School";
+              bookmarks = [
+                { name = "UCF Dashboard"; url = "https://my.ucf.edu/dashboard"; }
+              ];
+            }
 
-              { type = "separator"; }
+            {
+              name = "Work";
+              bookmarks = [
+                { name = "Supabase";     url = "https://supabase.com/dashboard"; }
+                { name = "Expo";         url = "https://expo.dev/"; }
+                { name = "Vercel";       url = "https://vercel.com/"; }
+                { name = "Play Console"; url = "https://play.google.com/console"; }
+                { name = "RevenueCat";   url = "https://app.revenuecat.com/overview"; }
+                { name = "Slack";        url = "https://app.slack.com/client"; }
+              ];
+            }
 
-              (folder "School" [
-                (entry "UCF Dashboard" "https://my.ucf.edu/dashboard")
-              ])
-
-              (folder "Work" [
-                (entry "Supabase" "https://supabase.com/dashboard")
-                (entry "Expo"     "https://expo.dev/")
-                (entry "Vercel"   "https://vercel.com/")
-                (entry "Play Console" "https://play.google.com/console")
-                (entry "RevenueCat"   "https://app.revenuecat.com/overview")
-                (entry "Slack"        "https://app.slack.com/client")
-              ])
-
-              (folder "ComputeSDK" [])
-              (folder "Docs" [])
-              (folder "Reads" [])
-            ];
+            { name = "ComputeSDK"; bookmarks = [ ]; }
+            { name = "Docs";       bookmarks = [ ]; }
+            { name = "Reads";      bookmarks = [ ]; }
+          ];
         }
       ];
     };
@@ -101,7 +121,6 @@
           ];
 
           advancedUserEnabled = true;
-
           privacy.disableRemoteFonts = false;
         };
       };
