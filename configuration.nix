@@ -173,7 +173,6 @@
     emacs
     wireshark
     kicad
-    librewolf
     android-studio
     mpv
     gimp

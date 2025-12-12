@@ -1,7 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 
 {
-  # Match this to your installation / HM version (you can keep 25.11 if you like)
+  # keep this aligned with when you first started using HM on this machine
   home.stateVersion = "24.11";
 
   ############################
@@ -23,6 +23,15 @@
   ];
 
   ############################
+  # Home Manager essentials
+  ############################
+  programs.home-manager.enable = true;
+
+  # These make HM behave consistently across shells/session launches
+  home.username = "iber";
+  home.homeDirectory = "/home/iber";
+
+  ############################
   # Home directory layout
   ############################
   # Automatically ensure base directories exist in $HOME
@@ -39,6 +48,7 @@
     "$HOME/.config/emacs/bin/"
   ];
 
-  # You can add more top-level HM options here later if you want.
+  # Optional but very common quality-of-life:
+  # enable XDG base dirs so apps cooperate nicely
+  xdg.enable = true;
 }
-
