@@ -17,11 +17,14 @@
       "browser.newtabpage.activity-stream.feeds.topsites"        = false;
       "browser.newtabpage.activity-stream.showSponsored"         = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+
       "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
+
       # Telemetry off.
       "datareporting.healthreport.uploadEnabled"   = false;
       "datareporting.policy.dataSubmissionEnabled" = false;
     };
+
     ##################################################################
     # Containers
     ##################################################################
@@ -44,16 +47,15 @@
       };
     };
 
+    ##################################################################
+    # Bookmarks (everything on the toolbar)
+    ##################################################################
 
-    ##################################################################
-    # Bookmarks
-    ##################################################################
+
     bookmarks = {
       force = true;
-
       settings = [
         {
-          # A real folder node that goes on the bookmarks toolbar
           name = "Toolbar";
           toolbar = true;
 
@@ -62,6 +64,9 @@
             { name = "YouTube"; url = "https://youtube.com/"; }
             { name = "GitHub";  url = "https://github.com/"; }
             { name = "ChatGPT"; url = "https://chatgpt.com/"; }
+
+            "separator"
+
             {
               name = "School";
               bookmarks = [
@@ -81,6 +86,8 @@
               ];
             }
 
+            "separator"
+
             { name = "ComputeSDK"; bookmarks = [ ]; }
             { name = "Docs";       bookmarks = [ ]; }
             { name = "Reads";      bookmarks = [ ]; }
@@ -88,6 +95,7 @@
         }
       ];
     };
+
     ##################################################################
     # Extensions
     ##################################################################
@@ -102,9 +110,6 @@
       ];
 
       settings = {
-        ##############################################################
-        # uBlock Origin – privacy-heavy but not insane
-        ##############################################################
         "uBlock0@raymondhill.net".settings = {
           selectedFilterLists = [
             "user-filters"

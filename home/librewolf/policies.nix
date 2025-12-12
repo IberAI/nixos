@@ -11,6 +11,7 @@
     DisablePocket          = true;
     DisableTelemetry       = true;
     NoDefaultBookmarks     = false;
+
     EnableTrackingProtection = {
       Value          = true;
       Cryptomining   = true;
@@ -29,125 +30,91 @@
       Behavior                = "reject";
       BehaviorPrivateBrowsing = "reject";
 
-      # Only these origins can set cookies and keep sessions:
+      # Only these ORIGINS can set cookies and keep sessions:
+      # (No wildcards. For Slack you likely need your workspace origin too.)
       Allow = [
-        ##############################################################
-        # GitHub (OAuth, login)
-        ##############################################################
+        # GitHub
         "https://github.com"
         "https://api.github.com"
 
-        ##############################################################
-        # Discord (login, OAuth, SSO)
-        ##############################################################
+        # Discord
         "https://discord.com"
         "https://login.discord.com"
-
-        # REQUIRED for Discord login
         "https://id.discord.com"
 
-        ##############################################################
-        # Slack (login + workspace session)
-        ##############################################################
+        # Slack (ADD your workspace!)
         "https://slack.com"
         "https://app.slack.com"
+        # "https://YOURWORKSPACE.slack.com"
 
-        ##############################################################
-        # Supabase (auth only)
-        ##############################################################
+        # Supabase
         "https://supabase.com"
         "https://auth.supabase.com"
-
-        # Supabase OAuth redirector
         "https://oauth.supabase.com"
 
-        ##############################################################
-        # Expo (auth only)
-        ##############################################################
+        # Expo
         "https://expo.dev"
         "https://auth.expo.dev"
 
-        ##############################################################
-        # Vercel (OAuth login)
-        ##############################################################
+        # Vercel
         "https://vercel.com"
         "https://api.vercel.com"
-
-        # Vercel uses an auth callback host
         "https://auth.vercel.com"
 
-        ##############################################################
-        # RevenueCat (login only)
-        ##############################################################
+        # RevenueCat
         "https://app.revenuecat.com"
 
-        ##############################################################
-        # Google authentication
-        ##############################################################
+        # Google auth / APIs (used by lots of SSO flows)
         "https://accounts.google.com"
         "https://securetoken.googleapis.com"
-
-        # Google OAuth helpers
         "https://oauth2.googleapis.com"
         "https://www.googleapis.com"
-
-        # Only needed if you actually use these services:
         "https://mail.google.com"
         "https://play.google.com"
         "https://console.cloud.google.com"
 
-        ##############################################################
         # Apple login
-        ##############################################################
         "https://appleid.apple.com"
         "https://idmsa.apple.com"
 
-        ##############################################################
         # School
-        ##############################################################
         "https://my.ucf.edu"
 
-        ##############################################################
-        # ChatGPT / OpenAI authentication
-        ##############################################################
+        # ChatGPT / OpenAI
         "https://chatgpt.com"
         "https://chat.openai.com"
         "https://auth.openai.com"
-
-        # Required for token exchange
         "https://api.openai.com"
 
-        ##############################################################
-        # Figma authentication
-        ##############################################################
+        # Figma
         "https://www.figma.com"
         "https://id.figma.com"
-
-        # Required for Google SSO on Figma
-        "https://www.googleapis.com"
       ];
 
-
-      Locked = false;
+      Locked = true;
     };
+
     ##############################################################
-    # WIPE EVERYTHING ON SHUTDOWN (except allow-list cookies)
+    # WIPE MOST DATA ON SHUTDOWN — BUT KEEP LOGIN STATE
+    #
+    # IMPORTANT:
+    # - Sessions = "Active Logins" -> MUST be false if you want to stay logged in
+    # - OfflineApps / site storage -> keep it if you want modern webapps to persist auth state
     ##############################################################
     SanitizeOnShutdown = {
-      Cache        = true;
-      Downloads    = true;
-      FormData     = true;
-      History      = true;
-      Sessions     = true;
-      OfflineApps  = true;
+      Cache       = true;
+      Downloads   = true;
+      FormData    = true;
+      History     = true;
 
-      # Delete all permissions (mic/screen will re-ask).
+      Cookies     = false;  # keep cookies for allow-listed sites
+      Sessions    = false;  # keep active logins
+      OfflineApps = false;  # keep site storage
+
+      # Optional: wipe permissions (mic/cam prompts re-ask)
       SiteSettings = true;
 
-      # Keep cookies for allow-listed sites.
-      Cookies = false;
-
-      Locked = false;
+      Locked = true;
     };
 
     ##############################################################
