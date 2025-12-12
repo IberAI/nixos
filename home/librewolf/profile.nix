@@ -6,6 +6,9 @@
     isDefault = true;
     name      = "Default";
 
+    ##################################################################
+    # Settings
+    ##################################################################
     settings = {
       "browser.startup.homepage"          = "about:home";
       "browser.shell.checkDefaultBrowser" = false;
@@ -14,75 +17,61 @@
       "browser.newtabpage.activity-stream.feeds.topsites"        = false;
       "browser.newtabpage.activity-stream.showSponsored"         = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+      "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
 
       # Telemetry off.
       "datareporting.healthreport.uploadEnabled"   = false;
       "datareporting.policy.dataSubmissionEnabled" = false;
     };
 
-    Bookmarks = [
-      {
-        Title = "Discord";
-        URL = "https://discord.com/channels/@me";
-        Placement = "toolbar";
-      }
-      {
-        Title = "YouTube";
-        URL = "https://youtube.com/";
-        Placement = "toolbar";
-      }
-      {
-        Title = "GitHub";
-        URL = "https://github.com/";
-        Placement = "toolbar";
-      }
-      {
-        Title = "ChatGPT";
-        URL = "https://chatgpt.com/";
-        Placement = "toolbar";
-      }
-      {
-        Folder = "School";
-        Placement = "toolbar";
-        Children = [
-          {
-            Title = "UCF Dashboard";
-            URL = "https://my.ucf.edu/dashboard";
-          }
-        ];
-      }
-      {
-        Folder = "Work";
-        Placement = "toolbar";
-        Children = [
-          { Title = "Supabase"; URL = "https://supabase.com/dashboard"; }
-          { Title = "Expo";     URL = "https://expo.dev/"; }
-          { Title = "Vercel";   URL = "https://vercel.com/"; }
-          { Title = "Play Console"; URL = "https://play.google.com/console"; }
-          { Title = "RevenueCat"; URL = "https://app.revenuecat.com/overview"; }
-          { Title = "Slack"; URL = "https://app.slack.com/client"; }
-        ];
-      }
-      {
-        Folder = "ComputeSDK";
-        Placement = "toolbar";
-        Children = [];
-      }
-      {
-        Folder = "Docs";
-        Placement = "toolbar";
-        Children = [];
-      }
-      {
-        Folder = "Reads";
-        Placement = "toolbar";
-        Children = [];
-      }
-    ];
+    ##################################################################
+    # Bookmarks 
+    ##################################################################
+    bookmarks = {
+      force = true;
 
+      settings = [
+        {
+          name    = "Toolbar";
+          toolbar = true;
+
+          bookmarks =
+            let
+              entry = name: url: { inherit name url; };
+              folder = name: bookmarks: { inherit name bookmarks; };
+            in
+            [
+              (entry "Discord" "https://discord.com/channels/@me")
+              (entry "YouTube" "https://youtube.com/")
+              (entry "GitHub" "https://github.com/")
+              (entry "ChatGPT" "https://chatgpt.com/")
+              "separator"
+
+              (folder "School" [
+                (entry "UCF Dashboard" "https://my.ucf.edu/dashboard")
+              ])
+
+              (folder "Work" [
+                (entry "Supabase" "https://supabase.com/dashboard")
+                (entry "Expo"     "https://expo.dev/")
+                (entry "Vercel"   "https://vercel.com/")
+                (entry "Play Console" "https://play.google.com/console")
+                (entry "RevenueCat"   "https://app.revenuecat.com/overview")
+                (entry "Slack"        "https://app.slack.com/client")
+              ])
+
+              (folder "ComputeSDK" [])
+
+              (folder "Docs" [])
+
+              (folder "Reads" [])
+            ];
+        }
+      ];
+    };
 
     ##################################################################
-    # Extensions: uBlock Origin, CanvasBlocker, Decentraleyes
+    # Extensions
     ##################################################################
     extensions = {
       force = true;
@@ -115,11 +104,8 @@
 
           advancedUserEnabled = true;
 
-          privacy = {
-            disableRemoteFonts = false;
-          };
+          privacy.disableRemoteFonts = false;
         };
-
       };
     };
   };

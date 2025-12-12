@@ -31,43 +31,102 @@
 
       # Only these origins can set cookies and keep sessions:
       Allow = [
-        # Core accounts / dev
+        ##############################################################
+        # GitHub (OAuth, login)
+        ##############################################################
         "https://github.com"
+        "https://api.github.com"
 
-        # Discord (calls, screenshare)
+        ##############################################################
+        # Discord (login, OAuth, SSO)
+        ##############################################################
         "https://discord.com"
+        "https://login.discord.com"
 
-        # Slack (work)
+        # REQUIRED for Discord login
+        "https://id.discord.com"
+
+        ##############################################################
+        # Slack (login + workspace session)
+        ##############################################################
         "https://slack.com"
         "https://app.slack.com"
 
-        # Supabase
+        ##############################################################
+        # Supabase (auth only)
+        ##############################################################
         "https://supabase.com"
+        "https://auth.supabase.com"
 
-        # Dev tooling / hosting
+        # Supabase OAuth redirector
+        "https://oauth.supabase.com"
+
+        ##############################################################
+        # Expo (auth only)
+        ##############################################################
         "https://expo.dev"
+        "https://auth.expo.dev"
+
+        ##############################################################
+        # Vercel (OAuth login)
+        ##############################################################
         "https://vercel.com"
+        "https://api.vercel.com"
+
+        # Vercel uses an auth callback host
+        "https://auth.vercel.com"
+
+        ##############################################################
+        # RevenueCat (login only)
+        ##############################################################
         "https://app.revenuecat.com"
 
-        # Google auth / mail / dev consoles
+        ##############################################################
+        # Google authentication
+        ##############################################################
         "https://accounts.google.com"
+        "https://securetoken.googleapis.com"
+
+        # Google OAuth helpers
+        "https://oauth2.googleapis.com"
+        "https://www.googleapis.com"
+
+        # Only needed if you actually use these services:
         "https://mail.google.com"
         "https://play.google.com"
         "https://console.cloud.google.com"
 
-        # Apple developer
-        "https://developer.apple.com"
+        ##############################################################
+        # Apple login
+        ##############################################################
+        "https://appleid.apple.com"
+        "https://idmsa.apple.com"
 
+        ##############################################################
         # School
+        ##############################################################
         "https://my.ucf.edu"
 
-        # ChatGPT / OpenAI
+        ##############################################################
+        # ChatGPT / OpenAI authentication
+        ##############################################################
         "https://chatgpt.com"
         "https://chat.openai.com"
+        "https://auth.openai.com"
 
-        # Figma
+        # Required for token exchange
+        "https://api.openai.com"
+
+        ##############################################################
+        # Figma authentication
+        ##############################################################
         "https://www.figma.com"
+        "https://id.figma.com"
+
+        # Required for Google SSO on Figma
+        "https://www.googleapis.com"
       ];
+
 
       Locked = false;
     };
