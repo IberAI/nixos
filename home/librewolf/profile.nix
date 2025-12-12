@@ -26,7 +26,7 @@
 
     ##################################################################
     # Bookmarks 
-    ##################################################################
+    ##################################################################   
     bookmarks = {
       force = true;
 
@@ -45,7 +45,8 @@
               (entry "YouTube" "https://youtube.com/")
               (entry "GitHub" "https://github.com/")
               (entry "ChatGPT" "https://chatgpt.com/")
-              "separator"
+
+              { type = "separator"; }
 
               (folder "School" [
                 (entry "UCF Dashboard" "https://my.ucf.edu/dashboard")
@@ -61,15 +62,12 @@
               ])
 
               (folder "ComputeSDK" [])
-
               (folder "Docs" [])
-
               (folder "Reads" [])
             ];
         }
       ];
     };
-
     ##################################################################
     # Extensions
     ##################################################################
