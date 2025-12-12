@@ -71,10 +71,11 @@ in
               "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
 
             # Output navigation
-            "${mod}+a"        = "focus output left";
-            "${mod}+d"        = "focus output right";
-            "${mod}+Shift+a"  = "move container to output left";
-            "${mod}+Shift+d"  = "move container to output right";
+            "${mod}+a"        = "focus left";
+            "${mod}+d"        = "focus right";
+            "${mod}+Shift+a"  = "move left";
+            "${mod}+Shift+d"  = "move right";
+
 
             ##################################
             # Hardware keys: audio, media, brightness
