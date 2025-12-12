@@ -10,7 +10,7 @@
     DisableFirefoxStudies  = true;
     DisablePocket          = true;
     DisableTelemetry       = true;
-
+    NoDefaultBookmarks     = false;
     EnableTrackingProtection = {
       Value          = true;
       Cryptomining   = true;
@@ -71,67 +71,6 @@
 
       Locked = false;
     };
-
-    Bookmarks = [
-      {
-        Title = "Discord";
-        URL = "https://discord.com/channels/@me";
-        Placement = "toolbar";
-      }
-      {
-        Title = "YouTube";
-        URL = "https://youtube.com/";
-        Placement = "toolbar";
-      }
-      {
-        Title = "GitHub";
-        URL = "https://github.com/";
-        Placement = "toolbar";
-      }
-      {
-        Title = "ChatGPT";
-        URL = "https://chatgpt.com/";
-        Placement = "toolbar";
-      }
-      {
-        Folder = "School";
-        Placement = "toolbar";
-        Children = [
-          {
-            Title = "UCF Dashboard";
-            URL = "https://my.ucf.edu/dashboard";
-          }
-        ];
-      }
-      {
-        Folder = "Work";
-        Placement = "toolbar";
-        Children = [
-          { Title = "Supabase"; URL = "https://supabase.com/dashboard"; }
-          { Title = "Expo";     URL = "https://expo.dev/"; }
-          { Title = "Vercel";   URL = "https://vercel.com/"; }
-          { Title = "Play Console"; URL = "https://play.google.com/console"; }
-          { Title = "RevenueCat"; URL = "https://app.revenuecat.com/overview"; }
-          { Title = "Slack"; URL = "https://app.slack.com/client"; }
-        ];
-      }
-      {
-        Folder = "ComputeSDK";
-        Placement = "toolbar";
-        Children = [];
-      }
-      {
-        Folder = "Docs";
-        Placement = "toolbar";
-        Children = [];
-      }
-      {
-        Folder = "Reads";
-        Placement = "toolbar";
-        Children = [];
-      }
-    ];
-
     ##############################################################
     # WIPE EVERYTHING ON SHUTDOWN (except allow-list cookies)
     ##############################################################
