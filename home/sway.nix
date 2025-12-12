@@ -18,7 +18,7 @@ in
 
     config = {
       modifier = mod;
-
+      bars = [ ];
       terminal = "${pkgs.kitty}/bin/kitty";
 
       # Use rofi-wayland as the default menu (Mod+d)

@@ -19,6 +19,7 @@
     ./home/dunst.nix
     ./home/ssh.nix
     ./home/librewolf
+    ./home/battery-notify.nix
   ];
 
   ############################
