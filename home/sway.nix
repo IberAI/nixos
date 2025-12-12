@@ -21,7 +21,7 @@ in
       bars = [ ];
       terminal = "${pkgs.kitty}/bin/kitty";
 
-      # Use rofi-wayland as the default menu (Mod+d)
+      # Use rofi as the default menu (Mod+d)
       menu     = "${pkgs.rofi}/bin/rofi -show drun";
 
       ##################################
@@ -52,7 +52,7 @@ in
             # Apps
             "${mod}+t" = "exec ${pkgs.kitty}/bin/kitty";
 
-            # Explicit rofi-wayland launcher on Mod+r
+            # Explicit rofi launcher on Mod+r
             "${mod}+r" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
             "${mod}+f" = "exec ${pkgs.librewolf}/bin/librewolf";
@@ -131,7 +131,7 @@ in
   #############################
   home.packages = with pkgs; [
     kitty
-    rofi-wayland
+    rofi
     grim
     slurp
     wl-clipboard
