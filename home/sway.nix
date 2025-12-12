@@ -22,7 +22,7 @@ in
       terminal = "${pkgs.kitty}/bin/kitty";
 
       # Use rofi-wayland as the default menu (Mod+d)
-      menu     = "${pkgs.rofi-wayland}/bin/rofi -show drun";
+      menu     = "${pkgs.rofi}/bin/rofi -show drun";
 
       ##################################
       # Input devices
@@ -53,7 +53,7 @@ in
             "${mod}+t" = "exec ${pkgs.kitty}/bin/kitty";
 
             # Explicit rofi-wayland launcher on Mod+r
-            "${mod}+r" = "exec ${pkgs.rofi-wayland}/bin/rofi -show drun";
+            "${mod}+r" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
             "${mod}+f" = "exec ${pkgs.librewolf}/bin/librewolf";
 

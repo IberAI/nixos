@@ -155,7 +155,7 @@
     ####################
     waybar            # bar
     kitty             # terminal
-    rofi-wayland              # app launcher (Wayland/X via XWayland)
+    rofi# app launcher (Wayland/X via XWayland)
     dunst             # notifications
     wlogout           # logout/power menu
     grim              # screenshots
