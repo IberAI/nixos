@@ -30,7 +30,7 @@
         ublock-origin
         canvasblocker
         decentraleyes
-        keepassxc
+        keepassxc-browser
       ];
 
       settings = {
