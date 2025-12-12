@@ -7,7 +7,7 @@
     name      = "Default";
 
     settings = {
-      "browser.startup.homepage"          = "https://github.com";
+      "browser.startup.homepage"          = "about:home";
       "browser.shell.checkDefaultBrowser" = false;
 
       # No ads / sponsored junk on new tab.
@@ -21,70 +21,6 @@
     };
 
     ##################################################################
-    # Bookmarks – structured toolbar
-    ##################################################################
-    bookmarks = {
-      force = true;
-
-      settings = [
-        {
-          name    = "Toolbar";
-          toolbar = true;
-          bookmarks = [
-            { name = "Discord"; url = "https://discord.com/channels/@me"; }
-            { name = "YouTube"; url = "https://youtube.com/"; }
-            { name = "GitHub";  url = "https://github.com/"; }
-            { name = "ChatGPT"; url = "https://chatgpt.com/"; }
-
-            {
-              name = "School";
-              bookmarks = [
-                {
-                  name = "UCF Dashboard";
-                  url  = "https://my.ucf.edu/dashboard";
-                }
-              ];
-            }
-
-            {
-              name = "Work";
-              bookmarks = [
-                {
-                  name = "Supabase";
-                  url  = "https://supabase.com/dashboard";
-                }
-                {
-                  name = "Expo";
-                  url  = "https://expo.dev/";
-                }
-                {
-                  name = "Vercel";
-                  url  = "https://vercel.com/";
-                }
-                {
-                  name = "Play Console";
-                  url  = "https://play.google.com/console";
-                }
-                {
-                  name = "RevenueCat";
-                  url  = "https://app.revenuecat.com/overview";
-                }
-                {
-                  name = "Slack";
-                  url  = "https://app.slack.com/client";
-                }
-              ];
-            }
-
-            { name = "ComputeSDK"; bookmarks = [ ]; }
-            { name = "Docs";       bookmarks = [ ]; }
-            { name = "Reads";      bookmarks = [ ]; }
-          ];
-        }
-      ];
-    };
-
-    ##################################################################
     # Extensions: uBlock Origin, CanvasBlocker, Decentraleyes
     ##################################################################
     extensions = {
@@ -94,6 +30,7 @@
         ublock-origin
         canvasblocker
         decentraleyes
+        keepassxc
       ];
 
       settings = {
