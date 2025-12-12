@@ -55,47 +55,39 @@
     bookmarks = {
       force = true;
       settings = [
+        { name = "Discord"; url = "https://discord.com/channels/@me"; }
+        { name = "YouTube"; url = "https://youtube.com/"; }
+        { name = "GitHub";  url = "https://github.com/"; }
+        { name = "ChatGPT"; url = "https://chatgpt.com/"; }
+
+        "separator"
+
         {
-          name = "Toolbar";
-          toolbar = true;
-
+          name = "School";
           bookmarks = [
-            { name = "Discord"; url = "https://discord.com/channels/@me"; }
-            { name = "YouTube"; url = "https://youtube.com/"; }
-            { name = "GitHub";  url = "https://github.com/"; }
-            { name = "ChatGPT"; url = "https://chatgpt.com/"; }
-
-            "separator"
-
-            {
-              name = "School";
-              bookmarks = [
-                { name = "UCF Dashboard"; url = "https://my.ucf.edu/dashboard"; }
-              ];
-            }
-
-            {
-              name = "Work";
-              bookmarks = [
-                { name = "Supabase";     url = "https://supabase.com/dashboard"; }
-                { name = "Expo";         url = "https://expo.dev/"; }
-                { name = "Vercel";       url = "https://vercel.com/"; }
-                { name = "Play Console"; url = "https://play.google.com/console"; }
-                { name = "RevenueCat";   url = "https://app.revenuecat.com/overview"; }
-                { name = "Slack";        url = "https://app.slack.com/client"; }
-              ];
-            }
-
-            "separator"
-
-            { name = "ComputeSDK"; bookmarks = [ ]; }
-            { name = "Docs";       bookmarks = [ ]; }
-            { name = "Reads";      bookmarks = [ ]; }
+            { name = "UCF Dashboard"; url = "https://my.ucf.edu/dashboard"; }
           ];
         }
+
+        {
+          name = "Work";
+          bookmarks = [
+            { name = "Supabase";     url = "https://supabase.com/dashboard"; }
+            { name = "Expo";         url = "https://expo.dev/"; }
+            { name = "Vercel";       url = "https://vercel.com/"; }
+            { name = "Play Console"; url = "https://play.google.com/console"; }
+            { name = "RevenueCat";   url = "https://app.revenuecat.com/overview"; }
+            { name = "Slack";        url = "https://app.slack.com/client"; }
+          ];
+        }
+
+        "separator"
+
+        { name = "ComputeSDK"; bookmarks = [ ]; }
+        { name = "Docs";       bookmarks = [ ]; }
+        { name = "Reads";      bookmarks = [ ]; }
       ];
     };
-
     ##################################################################
     # Extensions
     ##################################################################
