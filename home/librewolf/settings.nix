@@ -45,7 +45,6 @@
 
     # Referrer: only send on same-origin, and trim to origin.
     "network.http.referer.XOriginPolicy"         = 2; # same origin only
-    "network.http.referer.XOriginTrimmingPolicy" = 2; # origin only
 
     # No ping tracking.
     "browser.send_pings" = false;
