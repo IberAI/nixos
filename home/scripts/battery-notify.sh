@@ -1,7 +1,8 @@
 set -eu
 
-# systemd sets this; fallback just in case
+# systemd sets these; fallbacks just in case
 : "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
+: "${XDG_STATE_HOME:=$HOME/.local/state}"
 
 # Prefer a power_supply whose type is Battery (more robust than BAT0)
 BAT_PATH="$(
@@ -14,34 +15,47 @@ BAT_PATH="$(
 CAP="$(cat "$BAT_PATH/capacity" 2>/dev/null || echo 0)"
 STATUS="$(cat "$BAT_PATH/status" 2>/dev/null || echo Unknown)"
 
-STATE_DIR="$XDG_RUNTIME_DIR/battery-notify"
+STATE_DIR="$XDG_STATE_HOME/battery-notify"
 STATE_FILE="$STATE_DIR/state"
 mkdir -p "$STATE_DIR"
-LAST="$(cat "$STATE_FILE" 2>/dev/null || true)"
 
-notify() { dunstify -u "$1" "$2" "$3"; }
+# Persist last values so we only notify on THRESHOLD CROSSINGS.
+LAST_CAP=""
+LAST_STATUS=""
+if [ -f "$STATE_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$STATE_FILE" || true
+fi
 
-case "$STATUS" in
-  Discharging)
-    if [ "$CAP" -le 20 ] && [ "$LAST" != "low" ]; then
-      notify critical "Battery low" "Battery is at ${CAP}%."
-      echo low > "$STATE_FILE"
-    elif [ "$CAP" -ge 25 ] && [ "$LAST" = "low" ]; then
-      : > "$STATE_FILE"
-    fi
-    ;;
-  Charging)
-    if [ "$CAP" -ge 80 ] && [ "$LAST" != "high" ]; then
-      notify normal "Battery at 80%" "Battery reached ${CAP}%."
-      echo high > "$STATE_FILE"
-    elif [ "$CAP" -le 75 ] && [ "$LAST" = "high" ]; then
-      : > "$STATE_FILE"
-    fi
-    ;;
-  Full)
-    if [ "$LAST" != "high" ]; then
-      notify low "Battery full" "Battery is full."
-      echo high > "$STATE_FILE"
-    fi
-    ;;
-esac
+# First run: record and exit (prevents “boot spam”)
+if [ -z "${LAST_CAP:-}" ] || [ -z "${LAST_STATUS:-}" ]; then
+  {
+    echo "LAST_CAP=$CAP"
+    echo "LAST_STATUS=$STATUS"
+  } > "$STATE_FILE"
+  exit 0
+fi
+
+# Stable replace IDs (extra safety against stacking)
+notify() {
+  # $1 urgency, $2 title, $3 body, $4 replace_id
+  dunstify -u "$1" -r "$4" "$2" "$3"
+}
+
+# Low: discharging and crossing >20 -> <=20
+if [ "$STATUS" = "Discharging" ]; then
+  if [ "$LAST_CAP" -gt 20 ] && [ "$CAP" -le 20 ]; then
+    notify critical "Battery low" "Battery is at ${CAP}%." 42020
+  fi
+# High: charging and crossing <80 -> >=80
+elif [ "$STATUS" = "Charging" ]; then
+  if [ "$LAST_CAP" -lt 80 ] && [ "$CAP" -ge 80 ]; then
+    notify normal "Battery at 80%" "Battery reached ${CAP}%." 42080
+  fi
+fi
+
+# Record for next run
+{
+  echo "LAST_CAP=$CAP"
+  echo "LAST_STATUS=$STATUS"
+} > "$STATE_FILE"

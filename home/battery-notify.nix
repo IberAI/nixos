@@ -21,12 +21,12 @@ in
       After = [ "graphical-session.target" "dunst.service" ];
       Wants = [ "graphical-session.target" "dunst.service" ];
     };
+
     Service = {
       Type = "oneshot";
       ExecStart = "${batteryNotify}/bin/battery-notify";
-      # Optional: make sure we have a runtime dir (script also creates it)
-      RuntimeDirectory = "battery-notify";
     };
+
   };
 
   systemd.user.timers.battery-notify = {
