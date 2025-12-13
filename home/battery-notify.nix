@@ -4,7 +4,7 @@ let
   batteryNotify = pkgs.writeShellApplication {
     name = "battery-notify";
     runtimeInputs = [ pkgs.coreutils pkgs.dunst ];
-    text = builtins.readFile ../scripts/battery-notify.sh;
+    text = builtins.readFile ./scripts/battery-notify.sh;
   };
 in
 {
