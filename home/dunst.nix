@@ -7,10 +7,9 @@
 
     settings = {
       global = {
-        # basic placement
         monitor = 0;
         follow = "mouse";
-        geometry = "300x8-20+40";  # width x lines -x +y
+        geometry = "300x8-20+40";
         indicate_hidden = "yes";
         shrink = "no";
         transparency = 0;
@@ -21,22 +20,19 @@
         frame_width = 2;
         sort = "yes";
 
-        # look & feel
         font = "FiraCode Nerd Font 10";
         markup = "yes";
         format = "<b>%s</b>\n%b";
-
         alignment = "left";
         vertical_alignment = "center";
 
-        # timeouts
         idle_threshold = 120;
         show_age_threshold = 60;
         ignore_newline = "no";
 
-        # icons (uses your system theme)
         icon_position = "left";
         max_icon_size = 32;
+
         browser = "${pkgs.librewolf}/bin/librewolf";
       };
 
@@ -54,11 +50,12 @@
         timeout = 8;
       };
 
+      # IMPORTANT: don't stick forever
       urgency_critical = {
         background = "#2f0000";
         foreground = "#ffffff";
         frame_color = "#bf616a";
-        timeout = 0; # stays until dismissed
+        timeout = 15; # seconds
       };
     };
   };

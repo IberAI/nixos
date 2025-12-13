@@ -3,16 +3,14 @@
 let
   batteryNotify = pkgs.writeShellApplication {
     name = "battery-notify";
-    # No libnotify: use dunstify from dunst
     runtimeInputs = [ pkgs.coreutils pkgs.dunst ];
-    text = builtins.readFile ./scripts/battery-notify.sh;
+    text = builtins.readFile ../scripts/battery-notify.sh;
   };
 in
 {
-  # Recommended so HM starts/stops user units declaratively on switch
   systemd.user.startServices = "sd-switch";
 
-  # Make sure dunst is actually running (otherwise no notifications)
+  # Ensure dunst is up (you can keep this here even if you also import dunst.nix)
   services.dunst.enable = true;
 
   systemd.user.services.battery-notify = {
@@ -26,7 +24,6 @@ in
       Type = "oneshot";
       ExecStart = "${batteryNotify}/bin/battery-notify";
     };
-
   };
 
   systemd.user.timers.battery-notify = {
@@ -35,7 +32,12 @@ in
       Unit = "battery-notify.service";
       OnBootSec = "1m";
       OnUnitActiveSec = "2m";
-      AccuracySec = "30s";
+
+      # Lets systemd coalesce wakeups (lower power/CPU)
+      AccuracySec = "2m";
+
+      # Optional: avoids exact periodic wakeups
+      RandomizedDelaySec = "30s";
     };
     Install.WantedBy = [ "timers.target" ];
   };
