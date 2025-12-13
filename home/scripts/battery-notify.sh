@@ -1,97 +1,106 @@
-set -eu
+#!/usr/bin/env bash
+set -euo pipefail
 
-: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
-: "${XDG_STATE_HOME:=$HOME/.local/state}"
+# --- thresholds ---
+LOW_PCT=20
+CRIT_PCT=5
 
-BAT_PATH="$(
-  for p in /sys/class/power_supply/*; do
-    [ -f "$p/type" ] && [ "$(cat "$p/type" 2>/dev/null)" = "Battery" ] && { echo "$p"; break; }
+LOW_TIMEOUT_MS=20000
+CRIT_TIMEOUT_MS=15000
+
+# fixed notification id so we can replace/close our notif cleanly
+NOTIF_ID=9900
+
+STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/battery-dunst.state"
+mkdir -p "$(dirname "$STATE_FILE")"
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+close_notif() {
+  # best-effort close depending on dunst/dunstify version
+  if have dunstify; then dunstify -C "$NOTIF_ID" >/dev/null 2>&1 || true; fi
+  if have dunstctl; then dunstctl close "$NOTIF_ID" >/dev/null 2>&1 || true; fi
+}
+
+find_supply_by_type() {
+  local want="$1"
+  for d in /sys/class/power_supply/*; do
+    [[ -r "$d/type" ]] || continue
+    [[ "$(cat "$d/type")" == "$want" ]] && { echo "$d"; return 0; }
   done
-)"
-[ -n "${BAT_PATH:-}" ] || exit 0
-
-CAP="$(cat "$BAT_PATH/capacity" 2>/dev/null || echo 0)"
-STATUS="$(cat "$BAT_PATH/status" 2>/dev/null || echo Unknown)"
-
-case "$CAP" in ''|*[!0-9]*) CAP=0 ;; esac
-
-STATE_DIR="$XDG_STATE_HOME/battery-notify"
-STATE_FILE="$STATE_DIR/state"
-mkdir -p "$STATE_DIR"
-
-LOW_ID=42020
-HIGH_ID=42080
-
-LOW_T=15000   # ms
-HIGH_T=8000   # ms
-
-notify() {
-  # $1 urgency, $2 title, $3 body, $4 replace_id, $5 timeout_ms
-  dunstify -u "$1" -r "$4" -t "$5" "$2" "$3"
+  return 1
 }
 
-close_id() {
-  dunstify -C "$1" >/dev/null 2>&1 || true
+check_once() {
+  local bat ac capacity status ac_online last
+
+  bat="$(find_supply_by_type Battery || true)"
+  ac="$(find_supply_by_type Mains   || true)"
+  [[ -n "${bat:-}" ]] || return 0
+
+  capacity="$(< "$bat/capacity")"
+  status="$(< "$bat/status")"
+
+  ac_online=0
+  if [[ -n "${ac:-}" && -r "$ac/online" ]]; then
+    ac_online="$(< "$ac/online")"
+  fi
+
+  last="none"
+  [[ -r "$STATE_FILE" ]] && last="$(< "$STATE_FILE")"
+
+  # plugged in or charging? close our battery notif immediately.
+  if [[ "$ac_online" -eq 1 || "$status" == "Charging" ]]; then
+    close_notif
+    echo "none" > "$STATE_FILE"
+    return 0
+  fi
+
+  # only warn while actually discharging
+  if [[ "$status" != "Discharging" ]]; then
+    echo "none" > "$STATE_FILE"
+    return 0
+  fi
+
+  if (( capacity < CRIT_PCT )); then
+    if [[ "$last" != "crit" ]]; then
+      dunstify -r "$NOTIF_ID" -u critical -t "$CRIT_TIMEOUT_MS" \
+        "Battery critically low" "Battery at ${capacity}% — plug in now."
+      echo "crit" > "$STATE_FILE"
+    fi
+    return 0
+  fi
+
+  if (( capacity < LOW_PCT )); then
+    if [[ "$last" == "none" ]]; then
+      dunstify -r "$NOTIF_ID" -u normal -t "$LOW_TIMEOUT_MS" \
+        "Battery low" "Battery at ${capacity}%."
+      echo "low" > "$STATE_FILE"
+    fi
+    return 0
+  fi
+
+  # recovered above LOW threshold -> allow future warnings again
+  echo "none" > "$STATE_FILE"
 }
 
-write_state() {
-  # Quote STATUS safely (handles "Not charging")
-  printf 'LAST_CAP=%s\nLAST_STATUS=%q\n' "$CAP" "$STATUS" > "$STATE_FILE"
+daemon() {
+  check_once
+
+  # event-driven: blocks and wakes on power events (no polling)
+  if have upower; then
+    upower --monitor 2>/dev/null | while IFS= read -r _; do
+      check_once
+    done
+  else
+    udevadm monitor --udev --subsystem-match=power_supply 2>/dev/null \
+      | while IFS= read -r line; do
+          [[ "$line" == UDEV\ * ]] && check_once
+        done
+  fi
 }
 
-LAST_CAP=""
-LAST_STATUS=""
-if [ -f "$STATE_FILE" ]; then
-  # shellcheck disable=SC1090
-  . "$STATE_FILE" || true
-fi
-
-if [ -z "${LAST_CAP:-}" ] || [ -z "${LAST_STATUS:-}" ]; then
-  write_state
-  exit 0
-fi
-
-need_close_low=0
-need_close_high=0
-
-# Close low warning if we stopped discharging OR rose above 20%
-if [ "$LAST_STATUS" = "Discharging" ] && [ "$STATUS" != "Discharging" ]; then need_close_low=1; fi
-if [ "$LAST_CAP" -le 20 ] && [ "$CAP" -gt 20 ]; then need_close_low=1; fi
-
-# Close 80% notice if we stopped charging OR dropped below 80%
-if [ "$LAST_STATUS" = "Charging" ] && [ "$STATUS" != "Charging" ]; then need_close_high=1; fi
-if [ "$LAST_CAP" -ge 80 ] && [ "$CAP" -lt 80 ]; then need_close_high=1; fi
-
-[ "$need_close_low" -eq 1 ] && close_id "$LOW_ID"
-[ "$need_close_high" -eq 1 ] && close_id "$HIGH_ID"
-
-# If nothing changed and no closes needed, exit (lowest CPU)
-if [ "$CAP" = "$LAST_CAP" ] && [ "$STATUS" = "$LAST_STATUS" ] && \
-   [ "$need_close_low" -eq 0 ] && [ "$need_close_high" -eq 0 ]; then
-  exit 0
-fi
-
-if [ "$STATUS" = "Discharging" ]; then
-  # Crossing >20 -> <=20
-  if [ "$LAST_CAP" -gt 20 ] && [ "$CAP" -le 20 ]; then
-    notify critical "Battery low" "Battery is at ${CAP}%." "$LOW_ID" "$LOW_T"
-  fi
-
-  # Optional: if you just unplugged while already low, warn
-  if [ "$LAST_STATUS" != "Discharging" ] && [ "$CAP" -le 20 ]; then
-    notify critical "Battery low" "Battery is at ${CAP}%." "$LOW_ID" "$LOW_T"
-  fi
-
-elif [ "$STATUS" = "Charging" ]; then
-  # Crossing <80 -> >=80
-  if [ "$LAST_CAP" -lt 80 ] && [ "$CAP" -ge 80 ]; then
-    notify normal "Battery at 80%" "Battery reached ${CAP}%." "$HIGH_ID" "$HIGH_T"
-  fi
-
-  # Optional: if you just plugged in while already >=80, remind
-  if [ "$LAST_STATUS" != "Charging" ] && [ "$CAP" -ge 80 ]; then
-    notify normal "Battery at 80%" "Battery reached ${CAP}%." "$HIGH_ID" "$HIGH_T"
-  fi
-fi
-
-write_state
+case "${1:-}" in
+  --daemon) daemon ;;
+  *)        check_once ;;
+esac

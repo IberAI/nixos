@@ -3,42 +3,35 @@
 let
   batteryNotify = pkgs.writeShellApplication {
     name = "battery-notify";
-    runtimeInputs = [ pkgs.coreutils pkgs.dunst ];
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.dunst
+      pkgs.upower     # provides: upower --monitor
+      pkgs.systemd    # provides: udevadm fallback
+    ];
     text = builtins.readFile ./scripts/battery-notify.sh;
   };
 in
 {
   systemd.user.startServices = "sd-switch";
 
-  # Ensure dunst is up (you can keep this here even if you also import dunst.nix)
-  services.dunst.enable = true;
-
   systemd.user.services.battery-notify = {
     Unit = {
-      Description = "Battery threshold notifications (20% / 80%)";
+      Description = "Battery notifications via dunstify (event-driven)";
       After = [ "graphical-session.target" "dunst.service" ];
       Wants = [ "graphical-session.target" "dunst.service" ];
+      PartOf = [ "graphical-session.target" ];
     };
 
     Service = {
-      Type = "oneshot";
-      ExecStart = "${batteryNotify}/bin/battery-notify";
+      Type = "simple";
+      ExecStart = "${batteryNotify}/bin/battery-notify --daemon";
+      Restart = "always";
+      RestartSec = "2s";
     };
-  };
 
-  systemd.user.timers.battery-notify = {
-    Unit.Description = "Check battery thresholds";
-    Timer = {
-      Unit = "battery-notify.service";
-      OnBootSec = "1m";
-      OnUnitActiveSec = "2m";
-
-      # Lets systemd coalesce wakeups (lower power/CPU)
-      AccuracySec = "2m";
-
-      # Optional: avoids exact periodic wakeups
-      RandomizedDelaySec = "30s";
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
     };
-    Install.WantedBy = [ "timers.target" ];
   };
 }

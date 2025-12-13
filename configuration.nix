@@ -19,6 +19,7 @@
   services.blueman.enable = true;
   services.udisks2.enable = true;
   services.gvfs.enable = true;
+  services.upower.enable = true;
   ########################################
   # Bootloader
   ########################################
