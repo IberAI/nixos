@@ -53,7 +53,8 @@
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
-
+  virtualisation.docker.enable = true;
+  users.users.iber.extraGroups = [ "docker" ];
   ########################################
   # Time zone / locale
   ########################################
