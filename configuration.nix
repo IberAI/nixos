@@ -201,6 +201,7 @@
 
     nodejs              # Node.js + npm (for React Native / Expo, JS tooling)
     deno
+    pnpm
     ####################
     # Basic tools
     ####################
