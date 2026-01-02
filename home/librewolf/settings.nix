@@ -20,6 +20,10 @@
     "privacy.clearOnShutdown.sessions"    = false;
     "privacy.clearOnShutdown.offlineApps" = false;
 
+
+    "dom.event.clipboardevents.enabled" = false;
+    "privacy.userContext.enabled" = true;
+
     ##################################################################
     # Discord / WebRTC / compatibility
     ##################################################################

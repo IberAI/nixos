@@ -47,46 +47,24 @@
       };
     };
 
-    ##################################################################
-    # Bookmarks (everything on the toolbar)
-    ##################################################################
+    containersSettings = {
+      # Fun / Default container
+      "https://youtube.com"     = 0;
+      "https://www.youtube.com" = 0;
+      "https://discord.com"     = 0;
+      "https://chatgpt.com"     = 0;
 
+      # Work container
+      "https://github.com"      = 1;
+      "https://supabase.com"    = 1;
+      "https://expo.dev"        = 1;
+      "https://vercel.com"      = 1;
+      "https://play.google.com" = 1;
+      "https://app.revenuecat.com" = 1;
+      "https://app.slack.com"   = 1;
 
-    bookmarks = {
-      force = true;
-      settings = [
-        { name = "Discord"; url = "https://discord.com/channels/@me"; }
-        { name = "YouTube"; url = "https://youtube.com/"; }
-        { name = "GitHub";  url = "https://github.com/"; }
-        { name = "ChatGPT"; url = "https://chatgpt.com/"; }
-
-        "separator"
-
-        {
-          name = "School";
-          bookmarks = [
-            { name = "UCF Dashboard"; url = "https://my.ucf.edu/dashboard"; }
-          ];
-        }
-
-        {
-          name = "Work";
-          bookmarks = [
-            { name = "Supabase";     url = "https://supabase.com/dashboard"; }
-            { name = "Expo";         url = "https://expo.dev/"; }
-            { name = "Vercel";       url = "https://vercel.com/"; }
-            { name = "Play Console"; url = "https://play.google.com/console"; }
-            { name = "RevenueCat";   url = "https://app.revenuecat.com/overview"; }
-            { name = "Slack";        url = "https://app.slack.com/client"; }
-          ];
-        }
-
-        "separator"
-
-        { name = "ComputeSDK"; bookmarks = [ ]; }
-        { name = "Docs";       bookmarks = [ ]; }
-        { name = "Reads";      bookmarks = [ ]; }
-      ];
+      # School container
+      "https://my.ucf.edu"      = 2;
     };
     ##################################################################
     # Extensions

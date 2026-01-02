@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   programs.librewolf.policies = {
@@ -10,7 +10,7 @@
     DisableFirefoxStudies  = true;
     DisablePocket          = true;
     DisableTelemetry       = true;
-    NoDefaultBookmarks     = false;
+    NoDefaultBookmarks     = lib.mkForce true;
 
     EnableTrackingProtection = {
       Value          = true;
