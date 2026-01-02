@@ -11,6 +11,7 @@
     ./home/desktop/default.nix
     ./home/apps/default.nix
     ./home/dev/default.nix
+    ./home/librewolf/default.nix
   ];
 
   ############################
