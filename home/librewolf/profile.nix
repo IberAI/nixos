@@ -47,25 +47,6 @@
       };
     };
 
-    containersSettings = {
-      # Fun / Default container
-      "https://youtube.com"     = 0;
-      "https://www.youtube.com" = 0;
-      "https://discord.com"     = 0;
-      "https://chatgpt.com"     = 0;
-
-      # Work container
-      "https://github.com"      = 1;
-      "https://supabase.com"    = 1;
-      "https://expo.dev"        = 1;
-      "https://vercel.com"      = 1;
-      "https://play.google.com" = 1;
-      "https://app.revenuecat.com" = 1;
-      "https://app.slack.com"   = 1;
-
-      # School container
-      "https://my.ucf.edu"      = 2;
-    };
     ##################################################################
     # Extensions
     ##################################################################
