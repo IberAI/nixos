@@ -1,34 +1,34 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
-  ########################
-  # SSH agent (per-user)
-  ########################
-  services.ssh-agent = {
-    enable = true;
-    # Keep it simple – your HM version may not have integration toggles.
-  };
+  # You already have gpg-agent SSH support enabled at the NixOS level:
+  # programs.gnupg.agent.enableSSHSupport = true;
+  # So skip a separate ssh-agent here to avoid conflicts.
 
-  ########################
-  # SSH client config
-  ########################
   programs.ssh = {
     enable  = true;
     package = pkgs.openssh;
 
+    # Stop relying on Home Manager's built-in defaults (they're being removed)
+    enableDefaultConfig = false;
+
     matchBlocks = {
+      # Your "defaults" (applies to all hosts)
+      "*" = {
+        extraOptions = {
+          AddKeysToAgent = "yes";
+          ServerAliveInterval = "60";
+          ServerAliveCountMax = "3";
+          HashKnownHosts = "yes";
+        };
+      };
+
       "github.com" = {
         hostname       = "github.com";
         user           = "git";
-
-        # Your SSH key
         identityFile   = [ "~/.ssh/id_ed25519" ];
         identitiesOnly = true;
 
-        # Extra raw ssh_config options for this host
-        # This becomes:
-        #   Host github.com
-        #     AddKeysToAgent yes
         extraOptions = {
           AddKeysToAgent = "yes";
         };

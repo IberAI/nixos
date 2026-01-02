@@ -5,7 +5,6 @@
     ./battery-notify.nix
     ./dunst.nix
     ./fastfetch.nix
-    ./packages.nix
     ./sway.nix
     ./waybar.nix
   ];

@@ -50,6 +50,9 @@
   ########################################
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+
+  networking.firewall.enable = true; 
+
   virtualisation.docker.enable = true;
 
   ########################################
@@ -82,7 +85,7 @@
       "video"
       "wireshark"
       "docker"
-      "adbusers"  
+      "adbusers"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.fish;
@@ -111,6 +114,9 @@
   };
 
   services.pulseaudio.enable = false;
+
+  security.rtkit.enable = true; # optional but recommended for PipeWire
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -135,7 +141,6 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
-
     JAVA_HOME = "${pkgs.jdk17}";
   };
 
@@ -166,7 +171,6 @@
   programs.wireshark.package = pkgs.wireshark;
 
   programs.adb.enable = true;
-  services.udev.packages = [ pkgs.android-udev-rules ];
 
   ########################################
   # Home-Manager (via flakes)
