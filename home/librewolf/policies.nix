@@ -93,7 +93,34 @@
 
       Locked = true;
     };
+    UserContextPolicy = {
+      # Work container
+      "https://github.com"               = "work";
+      "https://api.github.com"           = "work";
+      "https://supabase.com"             = "work";
+      "https://auth.supabase.com"        = "work";
+      "https://oauth.supabase.com"       = "work";
+      "https://expo.dev"                 = "work";
+      "https://auth.expo.dev"            = "work";
+      "https://vercel.com"               = "work";
+      "https://api.vercel.com"           = "work";
+      "https://auth.vercel.com"          = "work";
+      "https://app.revenuecat.com"       = "work";
+      "https://slack.com"                = "work";
+      "https://app.slack.com"            = "work";
 
+      # School container
+      "https://my.ucf.edu"               = "school";
+      "https://www.khanacademy.org"      = "school";
+      "https://www.coursera.org"         = "school";
+      "https://www.edx.org"              = "school";
+
+      # Fun / default container
+      "https://discord.com"               = "default";
+      "https://chat.openai.com"          = "default";
+      "https://chatgpt.com"              = "default";
+      "https://youtube.com"              = "default";
+    };
     ##############################################################
     # WIPE MOST DATA ON SHUTDOWN — BUT KEEP LOGIN STATE
     #
