@@ -22,23 +22,11 @@
       ripgrep                 # live grep
       fd                      # fast file finder
       tree-sitter             # better syntax parsing
-
-      # JavaScript / TypeScript / React / Web
-      nodejs_22               # Node runtime for all the JS tools
+      nodePackages.typescript          # provides tsserver (important)
       nodePackages.typescript-language-server
-      nodePackages.vscode-langservers-extracted  # html / css / json etc.
-      nodePackages.prettier   # formatter (JS/TS/JSON/Markdown/etc.)
-
-      # Rust
-      rustc
-      cargo
-      clippy
-      rust-analyzer           # Rust LSP
-
-      # C / C++
-      clang
-      gcc
-    ];
+      nodePackages.vscode-langservers-extracted  # html/css/json/eslint
+      nodePackages.prettier
+      ];
 
     # Extra Lua config applied after NvChad loads
     extraConfig = ''

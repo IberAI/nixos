@@ -8,18 +8,9 @@
   # Module imports
   ############################
   imports = [
-    ./home/git.nix
-    ./home/fastfetch.nix
-    ./home/kitty.nix
-    ./home/sway.nix
-    ./home/waybar.nix
-    ./home/emacs.nix
-    ./home/keepassxc.nix
-    ./home/nvchad.nix
-    ./home/dunst.nix
-    ./home/ssh.nix
-    ./home/librewolf
-    ./home/battery-notify.nix
+    ./home/desktop/default.nix
+    ./home/apps/default.nix
+    ./home/dev/default.nix
   ];
 
   ############################

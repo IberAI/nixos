@@ -9,21 +9,21 @@
   ########################################
   # Imports
   ########################################
-
   imports = [
     ./hardware-configuration.nix
     # Home Manager via flake
     inputs.home-manager.nixosModules.default
   ];
+
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.upower.enable = true;
+
   ########################################
   # Bootloader
   ########################################
-
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 10;
@@ -31,11 +31,9 @@
   ########################################
   # Nix settings / unfree packages
   ########################################
-
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
-  # GC / optimisation: keep these as “optimizations”
   nix.gc = {
     automatic = true;
     dates = "weekly";
@@ -50,16 +48,14 @@
   ########################################
   # Networking
   ########################################
-
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
   virtualisation.docker.enable = true;
+
   ########################################
   # Time zone / locale
   ########################################
-
   time.timeZone = "America/New_York";
-
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -77,7 +73,6 @@
   ########################################
   # User account
   ########################################
-
   users.users.iber = {
     isNormalUser = true;
     description = "iber";
@@ -87,6 +82,7 @@
       "video"
       "wireshark"
       "docker"
+      "adbusers"  
     ];
     packages = with pkgs; [ ];
     shell = pkgs.fish;
@@ -99,23 +95,19 @@
   ########################################
   # Shells
   ########################################
-
   programs.fish.enable = true;
 
   ########################################
   # Graphics / audio (optimized for AMD Vega)
   ########################################
-
-  # New-style graphics module (replaces hardware.opengl)
   hardware.graphics = {
     enable = true;
-    enable32Bit = true; # 32-bit for Steam / Proton etc.
+    enable32Bit = true;
   };
 
-  # Extra AMD-specific goodies
   hardware.amdgpu = {
-    initrd.enable = true;   # load amdgpu early for nicer boot / KMS
-    opencl.enable = true;   # enable ROCm OpenCL stack where supported
+    initrd.enable = true;
+    opencl.enable = true;
   };
 
   services.pulseaudio.enable = false;
@@ -129,13 +121,11 @@
   ########################################
   # Sway (Wayland tiling "desktop")
   ########################################
-
   programs.sway = {
     enable = true;
-    wrapperFeatures.gtk = true;  # GTK + XWayland support
+    wrapperFeatures.gtk = true;
   };
 
-  # Portals (for screen sharing, file pickers, etc.).
   xdg.portal.enable = true;
   xdg.portal.extraPortals = with pkgs; [
     xdg-desktop-portal-wlr
@@ -143,118 +133,53 @@
 
   # Wayland-friendly environment variables.
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";  # make Electron/Chrome apps use Wayland
+    NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
+
+    JAVA_HOME = "${pkgs.jdk17}";
   };
 
   ########################################
   # Packages installed in system profile
   ########################################
-
   environment.systemPackages = with pkgs; [
-    ####################
-    # Desktop components
-    ####################
-    waybar            # bar
-    kitty             # terminal
-    rofi# app launcher (Wayland/X via XWayland)
-    dunst             # notifications
-    wlogout           # logout/power menu
-    grim              # screenshots
-    slurp             # region selection
-    wl-clipboard      # clipboard (wl-copy / wl-paste)
-    wf-recorder       # screen recording
-    udiskie
-    # theming / cursors
-    adwaita-icon-theme
-
-    ####################
-    # Your main apps
-    ####################
-    keepassxc
-    emacs
-    wireshark
-    kicad
-    android-studio
-    mpv
-    gimp
-    ffmpeg
-
-    ####################
-    # Shell / CLI extras
-    ####################
-    lsd
-    fastfetch
-
-    ####################
-    # Dev toolchains you asked for
-    ####################
-    gcc                 # C / C++ compiler
-    cmake               # build system (C / C++ etc.)
-    gdb                 # C / C++ debugger
-
-    rustc               # Rust compiler
-    cargo               # Rust package manager / build tool
-    rustfmt             # Rust formatter
-    clippy              # Rust lints
-    rust-analyzer       # Rust language server (for NVChad / LSP)
-
-    nodejs              # Node.js + npm (for React Native / Expo, JS tooling)
-    deno
-    pnpm
-    ####################
-    # Basic tools
-    ####################
-    git
-    curl
-    wget
-    zip
-    unzip
-    p7zip
-    htop
+    gcc
+    cmake
+    gdb
+    clang
   ];
 
   ########################################
   # Programs / services
   ########################################
-
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
   };
 
-  # System-wide JDK with proper JAVA_HOME (good for Android/Gradle)
   programs.java = {
     enable = true;
-    package = pkgs.jdk17;  # JDK 17 works with AGP 8.x builds
+    package = pkgs.jdk17;
   };
 
-  # Wireshark (basic enable)
   programs.wireshark.enable = true;
   programs.wireshark.package = pkgs.wireshark;
 
-  # (SSH / firewall left as in your old config – commented if unused)
-  # services.openssh.enable = true;
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # networking.firewall.enable = false;
+  programs.adb.enable = true;
+  services.udev.packages = [ pkgs.android-udev-rules ];
 
   ########################################
   # Home-Manager (via flakes)
   ########################################
-
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
-    # Load full declarative user/Sway configuration
     users.iber = import ./home.nix;
   };
 
   ########################################
   # System state version
   ########################################
-
-  system.stateVersion = "24.11"; # keep as your install release
+  system.stateVersion = "24.11";
 }
-
