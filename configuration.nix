@@ -77,12 +77,14 @@
     isNormalUser = true;
     description = "iber";
     extraGroups = [
-      "wheel"     # sudo
+      "wheel"
       "audio"
       "video"
       "wireshark"
       "docker"
       "adbusers"
+      "kvm"
+      "libvirtd"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.fish;
@@ -153,7 +155,6 @@
   ];
   services.udev.packages = with pkgs; [ android-udev-rules ];
   virtualisation.libvirtd.enable = true;
-  users.users.iber.extraGroups = config.users.users.iber.extraGroups ++ [ "kvm" "libvirtd" ];
     ########################################
   # Programs / services
   ########################################
