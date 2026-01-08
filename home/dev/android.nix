@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  sdk = "${config.home.homeDirectory}/Android/Sdk";
+  sdk = "${config.home.homeDirectory}/Android/sdk";
 in
 {
   home.packages = with pkgs; [
