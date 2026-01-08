@@ -1,43 +1,40 @@
 { config, pkgs, lib, ... }:
 
 let
-  sdk = "${config.home.homeDirectory}/Android/sdk";
+  androidSdk = pkgs.androidenv.androidPkgs.androidsdk;
+  sdkRoot = "${androidSdk}/libexec/android-sdk";
 in
 {
-  # Packages you actually need
   home.packages = with pkgs; [
-    android-studio
-    android-tools   # provides adb/fastboot in Nix store
-    gradle
+    # SDK via Nix (includes platform-tools/adb)
+    androidSdk
+
+    # Usual deps for RN/Expo + Gradle
+    jdk17
+    nodejs_20
     watchman
-    ninja
-    pkg-config
-    cmake
-    gnumake
+    git
     unzip
     zip
-    git
+    cmake
+    gnumake
+    ninja
+    pkg-config
   ];
 
   home.sessionVariables = {
-    ANDROID_HOME = sdk;
-    ANDROID_SDK_ROOT = sdk;
+    ANDROID_HOME = sdkRoot;
+    ANDROID_SDK_ROOT = sdkRoot;
   };
 
-  # Modern SDK PATH (no tools/ or tools/bin)
   home.sessionPath = [
-    "${sdk}/platform-tools"
-    "${sdk}/emulator"
-    "${sdk}/cmdline-tools/latest/bin"
+    "${sdkRoot}/platform-tools"
+    "${sdkRoot}/emulator"
+    "${sdkRoot}/cmdline-tools/latest/bin"
   ];
 
-  # Create SDK dir + make Expo happy by ensuring platform-tools/adb exists
-  home.activation.androidSdkLayout = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    mkdir -p "$HOME/Android/sdk/platform-tools"
-
-    # If the SDK doesn't provide adb yet, symlink Nix adb to the expected location.
-    if [ ! -e "$HOME/Android/sdk/platform-tools/adb" ]; then
-      ln -sfn "${pkgs.android-tools}/bin/adb" "$HOME/Android/sdk/platform-tools/adb"
-    fi
-  '';
+  # Optional: helps some Gradle/AGP builds on NixOS (aapt2 override)
+  # If you run into aapt2 errors, enable this.
+  # home.sessionVariables.GRADLE_OPTS =
+  #   "-Dorg.gradle.project.android.aapt2FromMavenOverride=${sdkRoot}/build-tools/28.0.3/aapt2";
 }

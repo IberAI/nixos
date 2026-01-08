@@ -14,7 +14,6 @@
   ########################################
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
-
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.upower.enable = true;
@@ -30,7 +29,11 @@
   # Nix settings / unfree packages
   ########################################
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   nixpkgs.config.allowUnfree = true;
+
+  # IMPORTANT for Android SDK via Nix
+  nixpkgs.config.android_sdk.accept_license = true;
 
   nix.gc = {
     automatic = true;
@@ -56,7 +59,6 @@
   # Time zone / locale
   ########################################
   time.timeZone = "America/New_York";
-
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS        = "en_US.UTF-8";
@@ -153,8 +155,8 @@
     gdb
     clang
   ];
-  virtualisation.libvirtd.enable = true;
-    ########################################
+
+  ########################################
   # Programs / services
   ########################################
   programs.gnupg.agent = {
@@ -170,7 +172,17 @@
   programs.wireshark.enable = true;
   programs.wireshark.package = pkgs.wireshark;
 
+  # ADB + permissions group
   programs.adb.enable = true;
+
+  # OPTIONAL but helpful for Samsung devices on some setups:
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="04e8", MODE="0660", GROUP="adbusers", TAG+="uaccess"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0660", GROUP="adbusers", TAG+="uaccess"
+  '';
+
+  # Emulator acceleration (optional)
+  virtualisation.libvirtd.enable = true;
 
   ########################################
   # Home-Manager (via flakes)
