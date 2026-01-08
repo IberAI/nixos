@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  inputs,
-  ...
-}:
+{ config, pkgs, inputs, ... }:
 
 {
   ########################################
@@ -11,12 +6,15 @@
   ########################################
   imports = [
     ./hardware-configuration.nix
-    # Home Manager via flake
     inputs.home-manager.nixosModules.default
   ];
 
+  ########################################
+  # Bluetooth / power / storage services
+  ########################################
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.upower.enable = true;
@@ -50,8 +48,7 @@
   ########################################
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
-
-  networking.firewall.enable = true; 
+  networking.firewall.enable = true;
 
   virtualisation.docker.enable = true;
 
@@ -59,8 +56,8 @@
   # Time zone / locale
   ########################################
   time.timeZone = "America/New_York";
-  i18n.defaultLocale = "en_US.UTF-8";
 
+  i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS        = "en_US.UTF-8";
     LC_MEASUREMENT    = "en_US.UTF-8";
@@ -80,7 +77,7 @@
     isNormalUser = true;
     description = "iber";
     extraGroups = [
-      "wheel"      # sudo
+      "wheel"     # sudo
       "audio"
       "video"
       "wireshark"
@@ -101,7 +98,7 @@
   programs.fish.enable = true;
 
   ########################################
-  # Graphics / audio (optimized for AMD Vega)
+  # Graphics / audio (AMD Vega)
   ########################################
   hardware.graphics = {
     enable = true;
@@ -114,8 +111,7 @@
   };
 
   services.pulseaudio.enable = false;
-
-  security.rtkit.enable = true; # optional but recommended for PipeWire
+  security.rtkit.enable = true;
 
   services.pipewire = {
     enable = true;
@@ -125,7 +121,7 @@
   };
 
   ########################################
-  # Sway (Wayland tiling "desktop")
+  # Sway (Wayland)
   ########################################
   programs.sway = {
     enable = true;
@@ -137,7 +133,9 @@
     xdg-desktop-portal-wlr
   ];
 
-  # Wayland-friendly environment variables.
+  ########################################
+  # Environment variables
+  ########################################
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
@@ -153,8 +151,10 @@
     gdb
     clang
   ];
-
-  ########################################
+  services.udev.packages = with pkgs; [ android-udev-rules ];
+  virtualisation.libvirtd.enable = true;
+  users.users.iber.extraGroups = config.users.users.iber.extraGroups ++ [ "kvm" "libvirtd" ];
+    ########################################
   # Programs / services
   ########################################
   programs.gnupg.agent = {

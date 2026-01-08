@@ -1,11 +1,17 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   sdk = "${config.home.homeDirectory}/Android/sdk";
 in
 {
   home.packages = with pkgs; [
-    android-tools  # adb/fastboot
+    # Android IDE + tooling
+    android-studio
+    android-tools      # adb / fastboot
+    gradle
+    watchman
+    ninja
+    pkg-config
   ];
 
   home.sessionVariables = {
@@ -13,11 +19,15 @@ in
     ANDROID_SDK_ROOT = sdk;
   };
 
+  # Correct PATH entries for modern SDK layout
   home.sessionPath = [
     "${sdk}/platform-tools"
     "${sdk}/emulator"
-    "${sdk}/tools"
-    "${sdk}/tools/bin"
     "${sdk}/cmdline-tools/latest/bin"
   ];
+
+  # Ensure the directory exists (Android Studio will populate it)
+  home.activation.ensureAndroidSdkDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/Android/sdk"
+  '';
 }
