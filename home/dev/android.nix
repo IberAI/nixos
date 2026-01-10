@@ -7,24 +7,26 @@ let
   # Writable overlay for stable pointers (safe to modify)
   overlayRoot = "${config.home.homeDirectory}/.local/share/android-sdk-overlay";
 
+  # Expo/RN (SDK 54 + RN 0.81) is requesting this NDK in your build logs
+  requiredNdk = "27.1.12297006";
+
   androidComposition = pkgs.androidenv.composeAndroidPackages {
-    # Your nixpkgs uses this knob (NOT includeCmdlineTools)
+    # Your nixpkgs uses this knob
     cmdLineToolsVersion = "latest";
 
-    platformVersions    = [ "latest" ];
-    buildToolsVersions  = [ "latest" ];
+    platformVersions   = [ "latest" ];
+    buildToolsVersions = [ "latest" ];
 
-    includeNDK          = true;
-    ndkVersions = [
-      "27.1.12297006"
-      "latest"
-    ];    
-    includeCmake        = true;
-    cmakeVersions       = [ "latest" ];
+    includeNDK   = true;
+
+    # Put the required NDK FIRST so androidenv’s ndk-bundle points at it
+    ndkVersions  = [ requiredNdk "latest" ];
+
+    includeCmake  = true;
+    cmakeVersions = [ "latest" ];
 
     includeEmulator     = true;
     includeSystemImages = true;
-
     systemImageTypes    = [ "google_apis" ];
     abiVersions         = [ "x86_64" ];
 
@@ -58,7 +60,7 @@ in
 
     JAVA_HOME = "${jdk}";
 
-    # Stable NDK path via overlay symlink
+    # Stable NDK path via overlay symlink (writable location)
     ANDROID_NDK_HOME = "${overlayRoot}/ndk/current";
     ANDROID_NDK_ROOT = "${overlayRoot}/ndk/current";
     NDK_HOME         = "${overlayRoot}/ndk/current";
@@ -71,22 +73,32 @@ in
   ];
 
   # Create overlay dir + ndk/current symlink WITHOUT writing into the SDK tree
+  # Critically: prefer the REQUIRED NDK version.
   home.activation.androidOverlay = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -euo pipefail
 
     sdk="${stableSdkRoot}"
     overlay="${overlayRoot}"
+    required="${requiredNdk}"
 
     mkdir -p "$overlay/ndk"
 
-    # Prefer side-by-side NDK: $sdk/ndk/<version>
-    ver="$(ls -1 "$sdk/ndk" 2>/dev/null | grep -E '^[0-9]+' | head -n 1 || true)"
-    if [ -n "$ver" ] && [ -d "$sdk/ndk/$ver" ]; then
-      ln -sfn "$sdk/ndk/$ver" "$overlay/ndk/current"
+    # 1) Prefer exact required side-by-side NDK: $sdk/ndk/<required>
+    if [ -d "$sdk/ndk/$required" ]; then
+      ln -sfn "$sdk/ndk/$required" "$overlay/ndk/current"
       exit 0
     fi
 
-    # Fallback: legacy ndk-bundle
+    # 2) Next best: any side-by-side NDK (pick highest version)
+    if [ -d "$sdk/ndk" ]; then
+      ver="$(ls -1 "$sdk/ndk" 2>/dev/null | grep -E '^[0-9]+' | sort -V | tail -n 1 || true)"
+      if [ -n "$ver" ] && [ -d "$sdk/ndk/$ver" ]; then
+        ln -sfn "$sdk/ndk/$ver" "$overlay/ndk/current"
+        exit 0
+      fi
+    fi
+
+    # 3) Fallback: legacy ndk-bundle (androidenv may link first NDK here)
     if [ -d "$sdk/ndk-bundle" ]; then
       ln -sfn "$sdk/ndk-bundle" "$overlay/ndk/current"
       exit 0
