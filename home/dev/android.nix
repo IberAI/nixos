@@ -1,26 +1,24 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Read-only SDK root (symlink to Nix store)
   stableSdkRoot = "${config.home.homeDirectory}/.local/share/android-sdk";
+  overlayRoot   = "${config.home.homeDirectory}/.local/share/android-sdk-overlay";
 
-  # Writable overlay for stable pointers (safe to modify)
-  overlayRoot = "${config.home.homeDirectory}/.local/share/android-sdk-overlay";
-
-  # Expo/RN (SDK 54 + RN 0.81) is requesting this NDK in your build logs
+  # Expo SDK 54 / RN 0.81 is requesting this in your logs
   requiredNdk = "27.1.12297006";
 
   androidComposition = pkgs.androidenv.composeAndroidPackages {
-    # Your nixpkgs uses this knob
     cmdLineToolsVersion = "latest";
 
-    platformVersions   = [ "latest" ];
-    buildToolsVersions = [ "latest" ];
+    # Ensure common components exist (latest from your pinned nixpkgs snapshot)
+    platformToolsVersion = "latest";
+    platformVersions     = [ "latest" ];
+    buildToolsVersions   = [ "latest" ];
 
-    includeNDK   = true;
+    includeNDK  = true;
 
-    # Put the required NDK FIRST so androidenv’s ndk-bundle points at it
-    ndkVersions  = [ requiredNdk "latest" ];
+    # Put required first so androidenv’s legacy ndk-bundle points to it
+    ndkVersions = [ requiredNdk "latest" ];
 
     includeCmake  = true;
     cmakeVersions = [ "latest" ];
@@ -30,7 +28,6 @@ let
     systemImageTypes    = [ "google_apis" ];
     abiVersions         = [ "x86_64" ];
 
-    # Prefer cmdline-tools; disable legacy tools package
     toolsVersion = null;
   };
 
@@ -41,7 +38,6 @@ in
   home.packages = with pkgs; [
     androidSdk
     jdk
-
     watchman
     pkg-config
     gnumake
@@ -57,13 +53,27 @@ in
   home.sessionVariables = {
     ANDROID_HOME     = stableSdkRoot;
     ANDROID_SDK_ROOT = stableSdkRoot;
-
-    JAVA_HOME = "${jdk}";
+    JAVA_HOME        = "${jdk}";
 
     # Stable NDK path via overlay symlink (writable location)
     ANDROID_NDK_HOME = "${overlayRoot}/ndk/current";
     ANDROID_NDK_ROOT = "${overlayRoot}/ndk/current";
     NDK_HOME         = "${overlayRoot}/ndk/current";
+
+    # 🔥 The critical “no project edits” fix:
+    # This is equivalent to putting android.builder.sdkDownload=false in gradle.properties,
+    # but applied globally via environment.
+    ORG_GRADLE_PROJECT_android_builder_sdkDownload = "false";
+  };
+
+  # (Optional but helpful) ensure GUI-launched processes also inherit vars
+  systemd.user.sessionVariables = {
+    ANDROID_HOME     = stableSdkRoot;
+    ANDROID_SDK_ROOT = stableSdkRoot;
+    ANDROID_NDK_HOME = "${overlayRoot}/ndk/current";
+    ANDROID_NDK_ROOT = "${overlayRoot}/ndk/current";
+    NDK_HOME         = "${overlayRoot}/ndk/current";
+    ORG_GRADLE_PROJECT_android_builder_sdkDownload = "false";
   };
 
   home.sessionPath = [
@@ -73,23 +83,21 @@ in
   ];
 
   # Create overlay dir + ndk/current symlink WITHOUT writing into the SDK tree
-  # Critically: prefer the REQUIRED NDK version.
+  # Deterministic: always prefer the REQUIRED NDK if present.
   home.activation.androidOverlay = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -euo pipefail
-
     sdk="${stableSdkRoot}"
     overlay="${overlayRoot}"
     required="${requiredNdk}"
 
     mkdir -p "$overlay/ndk"
 
-    # 1) Prefer exact required side-by-side NDK: $sdk/ndk/<required>
     if [ -d "$sdk/ndk/$required" ]; then
       ln -sfn "$sdk/ndk/$required" "$overlay/ndk/current"
       exit 0
     fi
 
-    # 2) Next best: any side-by-side NDK (pick highest version)
+    # fallback: highest side-by-side ndk
     if [ -d "$sdk/ndk" ]; then
       ver="$(ls -1 "$sdk/ndk" 2>/dev/null | grep -E '^[0-9]+' | sort -V | tail -n 1 || true)"
       if [ -n "$ver" ] && [ -d "$sdk/ndk/$ver" ]; then
@@ -98,7 +106,7 @@ in
       fi
     fi
 
-    # 3) Fallback: legacy ndk-bundle (androidenv may link first NDK here)
+    # fallback: legacy ndk-bundle
     if [ -d "$sdk/ndk-bundle" ]; then
       ln -sfn "$sdk/ndk-bundle" "$overlay/ndk/current"
       exit 0
