@@ -11,6 +11,5 @@
     ./nvchad.nix
     ./node.nix
     ./rust.nix
-    ./android.nix
   ];
 }
