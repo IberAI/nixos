@@ -144,15 +144,14 @@
     EDITOR = "nvim";
   };
 
+  programs.nix-ld.enable = true;
   ########################################
   # Packages installed in system profile
   ########################################
   environment.systemPackages = with pkgs; [
-    gcc
-    cmake
-    gdb
-    clang
+    gcc cmake gdb clang
     android-studio
+    android-tools
   ];
 
   ########################################
