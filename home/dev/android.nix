@@ -15,8 +15,10 @@ let
     buildToolsVersions  = [ "latest" ];
 
     includeNDK          = true;
-    ndkVersions         = [ "latest" ];
-
+    ndkVersions = [
+      "27.1.12297006"
+      "latest"
+    ];    
     includeCmake        = true;
     cmakeVersions       = [ "latest" ];
 
