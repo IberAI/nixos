@@ -9,6 +9,7 @@ in
     pnpm
     yarn
     deno
+    watchman
   ];
 
   home.sessionVariables = {
