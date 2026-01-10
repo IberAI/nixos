@@ -99,8 +99,19 @@
   ########################################
   # Shells
   ########################################
-  programs.fish.enable = true;
+  programs.fish = {
+    enable = true;
 
+    # Runs for interactive shells (what you’re using)
+    interactiveShellInit = ''
+      set -gx ANDROID_HOME "$HOME/.local/share/android-sdk"
+      set -gx ANDROID_SDK_ROOT "$HOME/.local/share/android-sdk"
+
+      set -gx ANDROID_NDK_HOME "$HOME/.local/share/android-sdk-overlay/ndk/current"
+      set -gx ANDROID_NDK_ROOT "$HOME/.local/share/android-sdk-overlay/ndk/current"
+      set -gx NDK_HOME "$HOME/.local/share/android-sdk-overlay/ndk/current"
+    '';
+  };
   ########################################
   # Graphics / audio (AMD Vega)
   ########################################
