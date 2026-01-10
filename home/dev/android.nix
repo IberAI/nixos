@@ -1,68 +1,64 @@
 { config, pkgs, lib, ... }:
 
 let
+  # Read-only SDK root (symlink to Nix store)
   stableSdkRoot = "${config.home.homeDirectory}/.local/share/android-sdk";
 
+  # Writable overlay for "current" pointers, caches, etc.
+  overlayRoot = "${config.home.homeDirectory}/.local/share/android-sdk-overlay";
+
   androidComposition = pkgs.androidenv.composeAndroidPackages {
-    # In your nixpkgs, cmdline-tools is controlled by this
     cmdLineToolsVersion = "latest";
+    platformVersions    = [ "latest" ];
+    buildToolsVersions  = [ "latest" ];
 
-    # Most recent available in your nixpkgs snapshot (flake.lock controls reproducibility)
-    platformVersions   = [ "latest" ];
-    buildToolsVersions = [ "latest" ];
+    includeNDK          = true;
+    ndkVersions         = [ "latest" ];
 
-    includeNDK    = true;
-    ndkVersions   = [ "latest" ];
-
-    includeCmake  = true;
-    cmakeVersions = [ "latest" ];
+    includeCmake        = true;
+    cmakeVersions       = [ "latest" ];
 
     includeEmulator     = true;
     includeSystemImages = true;
+    systemImageTypes    = [ "google_apis" ];
+    abiVersions         = [ "x86_64" ];
 
-    abiVersions      = [ "x86_64" ];
-    systemImageTypes = [ "google_apis" ];
-
-    # Avoid legacy "tools" package; rely on cmdline-tools
+    # Tools is obsolete; manual explicitly allows setting null :contentReference[oaicite:23]{index=23}
     toolsVersion = null;
   };
 
   androidSdk = androidComposition.androidsdk;
-
-  # Java 17 is the safe default for modern Android Gradle Plugin / RN builds
-  jdk = pkgs.jdk17;
 in
 {
   home.packages = with pkgs; [
     androidSdk
-
-    # Gradle/AGP friendliness
-    jdk
-
-    # Expo / RN helpers
+    jdk17
     watchman
-    pkg-config
+    cmake
     gnumake
     ninja
-    cmake
+    pkg-config
     python3
   ];
 
-  # Stable SDK path that does not change across rebuilds
+  # Stable SDK root -> Nix store SDK (read-only)
   home.file.".local/share/android-sdk".source =
     "${androidSdk}/libexec/android-sdk";
 
+  # Writable overlay
+  home.file.".local/share/android-sdk-overlay".directory = true;
+
   home.sessionVariables = {
     ANDROID_HOME     = stableSdkRoot;
+    # Nixpkgs manual notes ANDROID_SDK_ROOT is deprecated but sometimes needed :contentReference[oaicite:24]{index=24}
     ANDROID_SDK_ROOT = stableSdkRoot;
 
-    # Many Android builds expect JAVA_HOME
-    JAVA_HOME = "${jdk}";
+    JAVA_HOME = "${pkgs.jdk17}";
 
-    # Use a stable NDK path (avoid versioned dir surprises)
-    ANDROID_NDK_HOME = "${stableSdkRoot}/ndk/current";
-    ANDROID_NDK_ROOT = "${stableSdkRoot}/ndk/current";
-    NDK_HOME         = "${stableSdkRoot}/ndk/current";
+    # Stable NDK path (overlay), avoids ndk-bundle vs side-by-side surprises
+    ANDROID_NDK_HOME = "${overlayRoot}/ndk/current";
+    ANDROID_NDK_ROOT = "${overlayRoot}/ndk/current";
+    NDK_HOME         = "${overlayRoot}/ndk/current";
   };
 
   home.sessionPath = [
@@ -71,26 +67,27 @@ in
     "${stableSdkRoot}/cmdline-tools/latest/bin"
   ];
 
-  # Create a stable NDK symlink:
-  # - Prefer side-by-side NDK at $SDK/ndk/<version>
-  # - Fall back to legacy $SDK/ndk-bundle if that's what exists
+  # Create overlay "current" symlink pointing into the (read-only) SDK
   home.activation.androidNdkCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -euo pipefail
-
     sdk="${stableSdkRoot}"
+    overlay="${overlayRoot}"
 
-    mkdir -p "$sdk/ndk"
+    mkdir -p "$overlay/ndk"
 
     # Prefer side-by-side NDK: $sdk/ndk/<version>
     ver="$(ls -1 "$sdk/ndk" 2>/dev/null | grep -E '^[0-9]+' | head -n 1 || true)"
     if [ -n "$ver" ] && [ -d "$sdk/ndk/$ver" ]; then
-      ln -sfn "$sdk/ndk/$ver" "$sdk/ndk/current"
+      ln -sfn "$sdk/ndk/$ver" "$overlay/ndk/current"
       exit 0
     fi
 
-    # Fallback: legacy NDK location
+    # Fallback to ndk-bundle (manual: first NDK is linked there) :contentReference[oaicite:25]{index=25}
     if [ -d "$sdk/ndk-bundle" ]; then
-      ln -sfn "$sdk/ndk-bundle" "$sdk/ndk/current"
+      ln -sfn "$sdk/ndk-bundle" "$overlay/ndk/current"
+      exit 0
     fi
+
+    echo "Warning: No NDK found under $sdk/ndk or $sdk/ndk-bundle"
   '';
 }
