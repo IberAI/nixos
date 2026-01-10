@@ -100,6 +100,11 @@
   # Shells
   ########################################
   programs.fish.enable = true;
+  programs.fish.loginShellInit = ''
+    set -gx ANDROID_HOME "${storeSdkRoot}"
+    set -gx ANDROID_SDK_ROOT "${storeSdkRoot}"
+    set -gx JAVA_HOME "${jdk.home}"
+  '';
   ########################################
   # Graphics / audio (AMD Vega)
   ########################################
