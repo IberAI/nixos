@@ -4,11 +4,13 @@ let
   # Read-only SDK root (symlink to Nix store)
   stableSdkRoot = "${config.home.homeDirectory}/.local/share/android-sdk";
 
-  # Writable overlay for "current" pointers, caches, etc.
+  # Writable overlay for stable pointers (safe to modify)
   overlayRoot = "${config.home.homeDirectory}/.local/share/android-sdk-overlay";
 
   androidComposition = pkgs.androidenv.composeAndroidPackages {
+    # Your nixpkgs uses this knob (NOT includeCmdlineTools)
     cmdLineToolsVersion = "latest";
+
     platformVersions    = [ "latest" ];
     buildToolsVersions  = [ "latest" ];
 
@@ -20,24 +22,27 @@ let
 
     includeEmulator     = true;
     includeSystemImages = true;
+
     systemImageTypes    = [ "google_apis" ];
     abiVersions         = [ "x86_64" ];
 
-    # Tools is obsolete; manual explicitly allows setting null :contentReference[oaicite:23]{index=23}
+    # Prefer cmdline-tools; disable legacy tools package
     toolsVersion = null;
   };
 
   androidSdk = androidComposition.androidsdk;
+  jdk = pkgs.jdk17;
 in
 {
   home.packages = with pkgs; [
     androidSdk
-    jdk17
+    jdk
+
     watchman
-    cmake
+    pkg-config
     gnumake
     ninja
-    pkg-config
+    cmake
     python3
   ];
 
@@ -45,17 +50,13 @@ in
   home.file.".local/share/android-sdk".source =
     "${androidSdk}/libexec/android-sdk";
 
-  # Writable overlay
-  home.file.".local/share/android-sdk-overlay".directory = true;
-
   home.sessionVariables = {
     ANDROID_HOME     = stableSdkRoot;
-    # Nixpkgs manual notes ANDROID_SDK_ROOT is deprecated but sometimes needed :contentReference[oaicite:24]{index=24}
     ANDROID_SDK_ROOT = stableSdkRoot;
 
-    JAVA_HOME = "${pkgs.jdk17}";
+    JAVA_HOME = "${jdk}";
 
-    # Stable NDK path (overlay), avoids ndk-bundle vs side-by-side surprises
+    # Stable NDK path via overlay symlink
     ANDROID_NDK_HOME = "${overlayRoot}/ndk/current";
     ANDROID_NDK_ROOT = "${overlayRoot}/ndk/current";
     NDK_HOME         = "${overlayRoot}/ndk/current";
@@ -67,9 +68,10 @@ in
     "${stableSdkRoot}/cmdline-tools/latest/bin"
   ];
 
-  # Create overlay "current" symlink pointing into the (read-only) SDK
-  home.activation.androidNdkCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  # Create overlay dir + ndk/current symlink WITHOUT writing into the SDK tree
+  home.activation.androidOverlay = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -euo pipefail
+
     sdk="${stableSdkRoot}"
     overlay="${overlayRoot}"
 
@@ -82,7 +84,7 @@ in
       exit 0
     fi
 
-    # Fallback to ndk-bundle (manual: first NDK is linked there) :contentReference[oaicite:25]{index=25}
+    # Fallback: legacy ndk-bundle
     if [ -d "$sdk/ndk-bundle" ]; then
       ln -sfn "$sdk/ndk-bundle" "$overlay/ndk/current"
       exit 0
