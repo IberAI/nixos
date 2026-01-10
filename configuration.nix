@@ -143,7 +143,6 @@
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     EDITOR = "nvim";
-    JAVA_HOME = "${pkgs.jdk17}";
   };
 
   ########################################
