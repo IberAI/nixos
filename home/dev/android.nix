@@ -4,42 +4,43 @@ let
   stableSdkRoot = "${config.home.homeDirectory}/.local/share/android-sdk";
 
   androidComposition = pkgs.androidenv.composeAndroidPackages {
-    platformVersions    = [ "latest" ];
-    buildToolsVersions  = [ "latest" ];
+    # cmdline-tools is controlled by this in many nixpkgs versions
+    cmdLineToolsVersion = "latest";
 
-    includeCmdlineTools = true;
+    # “Most recent” (tracks nixpkgs / repo.json in your nixpkgs)
+    platformVersions   = [ "latest" ];
+    buildToolsVersions = [ "latest" ];
 
-    includeNDK          = true;
-    ndkVersions         = [ "latest" ];
+    includeNDK   = true;
+    ndkVersions  = [ "latest" ];
 
-    includeCmake        = true;
-    cmakeVersions       = [ "latest" ];
+    includeCmake = true;
+    cmakeVersions = [ "latest" ];
 
     includeEmulator     = true;
     includeSystemImages = true;
 
-    abiVersions         = [ "x86_64" ];
-    systemImageTypes    = [ "google_apis" ];
+    abiVersions      = [ "x86_64" ];
+    systemImageTypes = [ "google_apis" ];
+
+    # Optional: many people set this to null to avoid legacy “tools” package weirdness
+    # (keeps you on cmdline-tools)
+    toolsVersion = null;
   };
 
   androidSdk = androidComposition.androidsdk;
-
-  # Use a JDK that Gradle/AGP likes (RN/Expo Android commonly requires Java 17) :contentReference[oaicite:1]{index=1}
-  jdk = pkgs.jdk17;
 in
 {
   home.packages = with pkgs; [
     androidSdk
-    jdk
-
     watchman
     pkg-config
+    cmake
     gnumake
     ninja
     python3
   ];
 
-  # Stable SDK root pointing into the Nix store
   home.file.".local/share/android-sdk".source =
     "${androidSdk}/libexec/android-sdk";
 
@@ -47,13 +48,10 @@ in
     ANDROID_HOME     = stableSdkRoot;
     ANDROID_SDK_ROOT = stableSdkRoot;
 
-    # Make Java explicit for Gradle (more reliable than a system-wide guess)
-    JAVA_HOME = "${jdk}";
-
-    # Provide multiple vars because different tools/plugins look for different names
-    ANDROID_NDK_HOME = "${stableSdkRoot}/ndk/current";
-    ANDROID_NDK_ROOT = "${stableSdkRoot}/ndk/current";
-    NDK_HOME         = "${stableSdkRoot}/ndk/current";
+    # Some native builds look for these names
+    ANDROID_NDK_HOME = "${stableSdkRoot}/ndk";
+    ANDROID_NDK_ROOT = "${stableSdkRoot}/ndk";
+    NDK_HOME         = "${stableSdkRoot}/ndk";
   };
 
   home.sessionPath = [
@@ -61,17 +59,4 @@ in
     "${stableSdkRoot}/emulator"
     "${stableSdkRoot}/cmdline-tools/latest/bin"
   ];
-
-  # Create a stable NDK symlink: ~/.local/share/android-sdk/ndk/current -> ndk/<version>
-  # This avoids “NDK not found” when the versioned folder name changes.
-  home.activation.androidNdkCurrent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    set -euo pipefail
-    if [ -d "${stableSdkRoot}/ndk" ]; then
-      ver="$(ls -1 "${stableSdkRoot}/ndk" | head -n 1 || true)"
-      if [ -n "$ver" ] && [ -d "${stableSdkRoot}/ndk/$ver" ]; then
-        mkdir -p "${stableSdkRoot}/ndk"
-        ln -sfn "${stableSdkRoot}/ndk/$ver" "${stableSdkRoot}/ndk/current"
-      fi
-    fi
-  '';
 }
