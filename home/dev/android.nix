@@ -1,44 +1,40 @@
+# home/dev/android.nix
 { config, pkgs, ... }:
 
 let
-  # Android SDK from nixpkgs androidenv
   androidPkgs = pkgs.androidenv.composeAndroidPackages {
-    # Tools version is relatively stable; if nixpkgs complains, remove it.
+    # These are the common knobs that still exist on newer nixpkgs.
+    # If toolsVersion ever errors, delete the line.
     toolsVersion = "26.1.1";
 
-    # Modern Expo/RN builds commonly need API 35 + Build Tools 35.x
-    platformVersions = [ "35" ];
-    buildToolsVersions = [ "35.0.0" ];
+    # Expo/RN Android builds: ensure API 35 exists.
+    # Keeping 34 as fallback helps when deps still reference 34 toolchains.
+    platformVersions = [ "35" "34" ];
 
-    includePlatformTools = true;  # adb
-    includeEmulator = true;       # emulator binary
-    includeCmdlineTools = true;   # sdkmanager/avdmanager
+    # Build tools: keep both for compatibility.
+    buildToolsVersions = [ "35.0.0" "34.0.0" ];
 
-    # NDK is only strictly needed for some native builds; harmless to include.
+    includeEmulator = true;
     includeNDK = true;
 
-    # IMPORTANT:
-    # Avoid pinning ndkVersions unless you *know* your nixpkgs has that exact version.
-    # Pinning the wrong one can cause evaluation errors.
+    # Pinning NDK can break evaluation if nixpkgs doesn't carry that exact version.
+    # Only enable if you're sure the version exists in your channel.
     # ndkVersions = [ "26.1.10909125" ];
   };
 
   androidSdk = androidPkgs.androidsdk;
-
-  # androidenv layout
   sdkRoot = "${androidSdk}/libexec/android-sdk";
 
-  # Useful PATH entries for Expo/RN + Android tooling
   sdkPaths = [
     "${sdkRoot}/platform-tools"            # adb
     "${sdkRoot}/emulator"                  # emulator
-    "${sdkRoot}/cmdline-tools/latest/bin"  # sdkmanager, avdmanager
+    "${sdkRoot}/cmdline-tools/latest/bin"  # sdkmanager, avdmanager (if present)
     "${sdkRoot}/tools/bin"
     "${sdkRoot}/tools"
   ];
 in
 {
-  # Licenses acceptance (you already set this system-wide; keeping here is fine too)
+  # License acceptance: system-level is best (you already set it), but harmless here too.
   nixpkgs.config.android_sdk.accept_license = true;
 
   home.packages = with pkgs; [
@@ -47,30 +43,23 @@ in
     watchman
   ];
 
-  # Make variables available to ALL shells + GUI apps launched in your session
+  # Visible to all shells AND GUI apps (Sway-launched apps too)
   home.sessionVariables = {
-    # Android Studio docs: ANDROID_HOME points to the SDK root; tools read it. :contentReference[oaicite:3]{index=3}
     ANDROID_HOME = sdkRoot;
-
-    # Many modern tools also read ANDROID_SDK_ROOT; keep it consistent with ANDROID_HOME.
     ANDROID_SDK_ROOT = sdkRoot;
-
-    # Java for Gradle/Android builds
     JAVA_HOME = pkgs.jdk17.home;
   };
 
-  # Make SDK tools available everywhere (not just fish)
+  # PATH for all shells (bash/zsh/fish) + session
   home.sessionPath = sdkPaths;
 
-  # Fish: add paths cleanly + export vars (without clobbering your other fish config)
+  # Fish: add (deduped) + export vars, without overriding your other fish config
   programs.fish.enable = true;
   programs.fish.shellInit = ''
-    # Android SDK/JDK (set for fish processes)
     set -gx ANDROID_HOME "${sdkRoot}"
     set -gx ANDROID_SDK_ROOT "${sdkRoot}"
     set -gx JAVA_HOME "${pkgs.jdk17.home}"
 
-    # Ensure tools are on PATH (deduped)
     fish_add_path -g \
       ${builtins.concatStringsSep " \\\n      " sdkPaths}
   '';
