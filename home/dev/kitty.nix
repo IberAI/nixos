@@ -1,8 +1,10 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.kitty = {
-    enable  = true;
+    enable = true;
     package = pkgs.kitty;
 
     font = {
@@ -21,10 +23,10 @@
       # No “are you sure?” when closing last window
       confirm_os_window_close = 0;
 
-      enable_audio_bell    = false;
+      enable_audio_bell = false;
       window_padding_width = 2;
 
-      active_border_color   = "#5cedaa";
+      active_border_color = "#5cedaa";
       inactive_border_color = "#b2d9c2";
 
       # Make tall the default, 70% main window
@@ -32,11 +34,10 @@
       enabled_layouts = "tall:bias=70;full_size=1,grid,stack";
 
       # Tab bar
-      tab_bar_edge  = "top";
+      tab_bar_edge = "top";
       tab_bar_style = "powerline";
       tab_bar_min_tabs = 1;
-      tab_title_template =
-        "{index}: {title}{' [{}]'.format(num_windows) if num_windows > 1 else ''}";
+      tab_title_template = "{index}: {title}{' [{}]'.format(num_windows) if num_windows > 1 else ''}";
     };
 
     ########################
@@ -47,12 +48,12 @@
 
       # New / close tab
       "ctrl+shift+n" = "new_tab";
-      "ctrl+shift+t" = "new_tab";      # keep old habit if you like
+      "ctrl+shift+t" = "new_tab"; # keep old habit if you like
       "ctrl+shift+q" = "close_tab";
 
       # Switch tabs with Ctrl+Shift+Left / Ctrl+Shift+Right
       "ctrl+shift+right" = "next_tab";
-      "ctrl+shift+left"  = "previous_tab";
+      "ctrl+shift+left" = "previous_tab";
 
       # Switch tabs with Ctrl+Shift+1..9 (1-based tabs)
       "ctrl+shift+1" = "goto_tab 1";
@@ -66,7 +67,7 @@
       "ctrl+shift+9" = "goto_tab 9";
 
       # Move current tab left/right
-      "ctrl+."     = "move_tab_forward";
+      "ctrl+." = "move_tab_forward";
       "ctrl+comma" = "move_tab_backward";
 
       ########## WINDOWS (SPLITS) ##########
@@ -83,7 +84,7 @@
 
       # Move focus between neighbors with Ctrl+Arrow
       "ctrl+right" = "neighboring_window right";
-      "ctrl+left"  = "neighboring_window left";
+      "ctrl+left" = "neighboring_window left";
 
       # Optional: vim-style focus (keep if you like)
       "ctrl+alt+h" = "neighboring_window left";
@@ -92,7 +93,7 @@
       "ctrl+alt+l" = "neighboring_window right";
 
       # Manual splits if you want explicit h/v splits
-      "ctrl+shift+minus"     = "launch --location=hsplit --cwd=current";
+      "ctrl+shift+minus" = "launch --location=hsplit --cwd=current";
       "ctrl+shift+backslash" = "launch --location=vsplit --cwd=current";
 
       # Resize current window

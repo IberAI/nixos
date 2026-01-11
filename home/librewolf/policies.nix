@@ -1,25 +1,28 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   programs.librewolf.policies = {
     ##############################################################
     # De-bloat & privacy hardening
     ##############################################################
-    CaptivePortal          = false;
+    CaptivePortal = false;
     DisableFirefoxAccounts = true;
-    DisableFirefoxStudies  = true;
-    DisablePocket          = true;
-    DisableTelemetry       = true;
-    NoDefaultBookmarks     = lib.mkForce true;
+    DisableFirefoxStudies = true;
+    DisablePocket = true;
+    DisableTelemetry = true;
+    NoDefaultBookmarks = lib.mkForce true;
 
     EnableTrackingProtection = {
-      Value          = true;
-      Cryptomining   = true;
+      Value = true;
+      Cryptomining = true;
       Fingerprinting = true;
     };
 
-    PasswordManagerEnabled   = false;
-    OfferToSaveLogins        = false;
+    PasswordManagerEnabled = false;
+    OfferToSaveLogins = false;
     OfferToSaveLoginsDefault = false;
 
     ##############################################################
@@ -27,7 +30,7 @@
     ##############################################################
     Cookies = {
       # EVERYTHING blocked unless allow-listed:
-      Behavior                = "reject";
+      Behavior = "reject";
       BehaviorPrivateBrowsing = "reject";
 
       # Only these ORIGINS can set cookies and keep sessions:
@@ -95,31 +98,31 @@
     };
     UserContextPolicy = {
       # Work container
-      "https://github.com"               = "work";
-      "https://api.github.com"           = "work";
-      "https://supabase.com"             = "work";
-      "https://auth.supabase.com"        = "work";
-      "https://oauth.supabase.com"       = "work";
-      "https://expo.dev"                 = "work";
-      "https://auth.expo.dev"            = "work";
-      "https://vercel.com"               = "work";
-      "https://api.vercel.com"           = "work";
-      "https://auth.vercel.com"          = "work";
-      "https://app.revenuecat.com"       = "work";
-      "https://slack.com"                = "work";
-      "https://app.slack.com"            = "work";
+      "https://github.com" = "work";
+      "https://api.github.com" = "work";
+      "https://supabase.com" = "work";
+      "https://auth.supabase.com" = "work";
+      "https://oauth.supabase.com" = "work";
+      "https://expo.dev" = "work";
+      "https://auth.expo.dev" = "work";
+      "https://vercel.com" = "work";
+      "https://api.vercel.com" = "work";
+      "https://auth.vercel.com" = "work";
+      "https://app.revenuecat.com" = "work";
+      "https://slack.com" = "work";
+      "https://app.slack.com" = "work";
 
       # School container
-      "https://my.ucf.edu"               = "school";
-      "https://www.khanacademy.org"      = "school";
-      "https://www.coursera.org"         = "school";
-      "https://www.edx.org"              = "school";
+      "https://my.ucf.edu" = "school";
+      "https://www.khanacademy.org" = "school";
+      "https://www.coursera.org" = "school";
+      "https://www.edx.org" = "school";
 
       # Fun / default container
-      "https://discord.com"               = "default";
-      "https://chat.openai.com"          = "default";
-      "https://chatgpt.com"              = "default";
-      "https://youtube.com"              = "default";
+      "https://discord.com" = "default";
+      "https://chat.openai.com" = "default";
+      "https://chatgpt.com" = "default";
+      "https://youtube.com" = "default";
     };
     ##############################################################
     # WIPE MOST DATA ON SHUTDOWN — BUT KEEP LOGIN STATE
@@ -129,14 +132,14 @@
     # - OfflineApps / site storage -> keep it if you want modern webapps to persist auth state
     ##############################################################
     SanitizeOnShutdown = {
-      Cache       = true;
-      Downloads   = true;
-      FormData    = true;
-      History     = true;
+      Cache = true;
+      Downloads = true;
+      FormData = true;
+      History = true;
 
-      Cookies     = false;  # keep cookies for allow-listed sites
-      Sessions    = false;  # keep active logins
-      OfflineApps = false;  # keep site storage
+      Cookies = false; # keep cookies for allow-listed sites
+      Sessions = false; # keep active logins
+      OfflineApps = false; # keep site storage
 
       # Optional: wipe permissions (mic/cam prompts re-ask)
       SiteSettings = true;
@@ -148,25 +151,25 @@
     # Remove Firefox/LibreWolf clutter
     ##############################################################
     FirefoxHome = {
-      Search            = true;
-      TopSites          = true;
-      Highlights        = false;
-      Pocket            = false;
-      SponsoredPocket   = false;
+      Search = true;
+      TopSites = true;
+      Highlights = false;
+      Pocket = false;
+      SponsoredPocket = false;
       SponsoredTopSites = false;
-      Snippets          = false;
+      Snippets = false;
     };
 
     FirefoxSuggest = {
-      WebSuggestions       = false;
+      WebSuggestions = false;
       SponsoredSuggestions = false;
-      ImproveSuggest       = false;
+      ImproveSuggest = false;
     };
 
     UserMessaging = {
       ExtensionRecommendations = false;
-      UrlbarInterventions      = false;
-      SkipOnboarding           = true;
+      UrlbarInterventions = false;
+      SkipOnboarding = true;
     };
   };
 }

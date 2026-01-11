@@ -1,7 +1,9 @@
 # home/dev/fish.nix
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.fish = {
     enable = true;
 

@@ -1,27 +1,29 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.librewolf.profiles.default = {
-    id        = 0;
+    id = 0;
     isDefault = true;
-    name      = "Default";
+    name = "Default";
 
     ##################################################################
     # Settings
     ##################################################################
     settings = {
-      "browser.startup.homepage"          = "about:home";
+      "browser.startup.homepage" = "about:home";
       "browser.shell.checkDefaultBrowser" = false;
 
       # No ads / sponsored junk on new tab.
-      "browser.newtabpage.activity-stream.feeds.topsites"        = false;
-      "browser.newtabpage.activity-stream.showSponsored"         = false;
+      "browser.newtabpage.activity-stream.feeds.topsites" = false;
+      "browser.newtabpage.activity-stream.showSponsored" = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
 
       "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
 
       # Telemetry off.
-      "datareporting.healthreport.uploadEnabled"   = false;
+      "datareporting.healthreport.uploadEnabled" = false;
       "datareporting.policy.dataSubmissionEnabled" = false;
     };
 

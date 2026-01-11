@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./settings.nix
     ./profile.nix
@@ -8,8 +10,8 @@
   ];
 
   programs.librewolf = {
-    enable  = true;
+    enable = true;
     package = pkgs.librewolf;
-    nativeMessagingHosts = [ pkgs.keepassxc ];
+    nativeMessagingHosts = [pkgs.keepassxc];
   };
 }

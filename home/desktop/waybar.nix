@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.waybar = {
     enable = true;
     systemd = {
@@ -10,28 +12,34 @@
 
     settings = {
       mainBar = {
-        layer     = "top";
-        position  = "top";
-        height    = 28;
+        layer = "top";
+        position = "top";
+        height = 28;
 
-        modules-left   = [ "sway/workspaces" ];
-        modules-center = [ "clock" ];
-        modules-right  = [ "cpu" "memory" "network" "backlight" "pulseaudio" "battery" ];
+        modules-left = ["sway/workspaces"];
+        modules-center = ["clock"];
+        modules-right = ["cpu" "memory" "network" "backlight" "pulseaudio" "battery"];
 
         "sway/workspaces" = {
           disable-scroll = true;
           format = "{name}";
         };
 
-        clock = { format = "{:%Y-%m-%d %H:%M}"; };
+        clock = {format = "{:%Y-%m-%d %H:%M}";};
 
-        cpu = { format = "CPU {usage}%"; interval = 2; };
-        memory = { format = "RAM {used:0.1f}G/{total:0.1f}G"; interval = 2; };
+        cpu = {
+          format = "CPU {usage}%";
+          interval = 2;
+        };
+        memory = {
+          format = "RAM {used:0.1f}G/{total:0.1f}G";
+          interval = 2;
+        };
 
         network = {
           interval = 5;
-          format-ethernet     = "Ethernet: {ifname}";
-          format-wifi         = "Wi-Fi: {essid} {signalStrength}%";
+          format-ethernet = "Ethernet: {ifname}";
+          format-wifi = "Wi-Fi: {essid} {signalStrength}%";
           format-disconnected = "Network: Disconnected";
         };
 
@@ -54,20 +62,20 @@
         };
 
         battery = {
-          bat      = "BAT0";
-          adapter  = "AC";
+          bat = "BAT0";
+          adapter = "AC";
           interval = 30;
 
           states = {
-            warning  = 20;
+            warning = 20;
             critical = 15;
           };
 
           format = "{capacity}%";
-          format-charging    = "{capacity}% charging";
+          format-charging = "{capacity}% charging";
           format-discharging = "{capacity}% discharging";
-          format-full        = "{capacity}% full";
-          format-plugged     = "{capacity}% plugged";
+          format-full = "{capacity}% full";
+          format-plugged = "{capacity}% plugged";
         };
       };
     };
