@@ -8,5 +8,6 @@
     # enable integrations (safe even if you don’t use all shells)
     enableBashIntegration = true;
     enableZshIntegration = true;
+    enableFishIntegration = true;
   };
 }
