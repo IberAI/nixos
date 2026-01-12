@@ -1,61 +1,78 @@
 # home/dev/android.nix
-{pkgs, ...}: let
+{ pkgs, config, lib, ... }:
+
+let
   androidPkgs = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
-    platformVersions = ["35" "34"];
-    buildToolsVersions = ["35.0.0" "34.0.0"];
-
+    platformVersions = [ "35" "34" ];
+    buildToolsVersions = [ "35.0.0" "34.0.0" ];
     includeEmulator = true;
 
-    # Expo / normal RN does NOT need NDK most of the time.
+    # Let Gradle download NDK/SDK stuff into ~/Android/Sdk (writable)
     includeNDK = false;
-
-    # If you later need native modules / CMake builds, flip these on:
-    # includeNDK = true;
-    # includeCmake = true;
-
-    # Only enable if you're sure your nixpkgs has this exact version:
-    # ndkVersions = [ "26.1.10909125" ];
   };
 
-  androidSdk = androidPkgs.androidsdk;
-  sdkRoot = "${androidSdk}/libexec/android-sdk";
+  nixAndroidSdk = androidPkgs.androidsdk;
+  nixSdkRoot = "${nixAndroidSdk}/libexec/android-sdk";
 
-  sdkPaths = [
-    "${sdkRoot}/platform-tools" # adb
-    "${sdkRoot}/emulator" # emulator
-    "${sdkRoot}/cmdline-tools/latest/bin" # sdkmanager, avdmanager
-    "${sdkRoot}/cmdline-tools/bin" # fallback path
-    "${sdkRoot}/tools/bin" # older layout fallback (harmless)
-    "${sdkRoot}/tools" # older layout fallback (harmless)
+  # Writable SDK used by ALL projects
+  userSdkRoot = "${config.home.homeDirectory}/Android/Sdk";
+in
+{
+  home.packages = with pkgs; [
+    nixAndroidSdk
+    jdk17
+    watchman
+    gradle
+    unzip
+    zip
+    which
+    file
   ];
-in {
-  home = {
-    packages = with pkgs; [
-      androidSdk
-      jdk17
-      watchman
 
-      # Useful for debugging Android builds / RN tooling
-      gradle
-      unzip
-      zip
-      which
-      file
-    ];
+  home.sessionVariables = {
+    ANDROID_HOME = userSdkRoot;
+    ANDROID_SDK_ROOT = userSdkRoot;
 
-    sessionVariables = {
-      ANDROID_HOME = sdkRoot;
-      ANDROID_SDK_ROOT = sdkRoot;
-
-      # Many Gradle/Android tools rely on this
-      JAVA_HOME = pkgs.jdk17.home;
-
-      # Expo/RN tooling is happier when locale is sane
-      LANG = "en_US.UTF-8";
-    };
-
-    # Makes PATH entries available to fish + GUI-launched apps
-    sessionPath = sdkPaths;
+    JAVA_HOME = pkgs.jdk17.home;
+    LANG = "en_US.UTF-8";
   };
+
+  # Put writable SDK paths first; keep Nix SDK tools as a fallback
+  home.sessionPath = [
+    "${userSdkRoot}/platform-tools"
+    "${userSdkRoot}/emulator"
+    "${userSdkRoot}/cmdline-tools/latest/bin"
+
+    "${nixSdkRoot}/cmdline-tools/latest/bin"
+    "${nixSdkRoot}/platform-tools"
+    "${nixSdkRoot}/emulator"
+  ];
+
+  # Ensure folders exist + provide adb at the path Expo expects
+  home.activation.androidSdkDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "${userSdkRoot}"
+    mkdir -p "${userSdkRoot}/cmdline-tools"
+    mkdir -p "${userSdkRoot}/platform-tools"
+
+    # Convenience symlink: expose cmdline-tools under ~/Android/Sdk without copying
+    if [ ! -e "${userSdkRoot}/cmdline-tools/latest" ]; then
+      ln -sfn "${nixSdkRoot}/cmdline-tools/latest" "${userSdkRoot}/cmdline-tools/latest"
+    fi
+
+    # Expo expects adb at: $ANDROID_SDK_ROOT/platform-tools/adb
+    if [ ! -e "${userSdkRoot}/platform-tools/adb" ]; then
+      ln -sfn "${nixSdkRoot}/platform-tools/adb" "${userSdkRoot}/platform-tools/adb"
+    fi
+
+    # Optional: fastboot (sometimes handy)
+    if [ -e "${nixSdkRoot}/platform-tools/fastboot" ] && [ ! -e "${userSdkRoot}/platform-tools/fastboot" ]; then
+      ln -sfn "${nixSdkRoot}/platform-tools/fastboot" "${userSdkRoot}/platform-tools/fastboot"
+    fi
+  '';
+
+  # Help Gradle locate the SDK globally (avoids per-project local.properties)
+  home.file.".gradle/gradle.properties".text = ''
+    android.sdk.path=${userSdkRoot}
+  '';
 }
