@@ -1,11 +1,14 @@
 # home/dev/android.nix
-{ pkgs, config, lib, ... }:
-
-let
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}: let
   androidPkgs = pkgs.androidenv.composeAndroidPackages {
     toolsVersion = "26.1.1";
-    platformVersions = [ "35" "34" ];
-    buildToolsVersions = [ "35.0.0" "34.0.0" ];
+    platformVersions = ["35" "34"];
+    buildToolsVersions = ["35.0.0" "34.0.0"];
     includeEmulator = true;
 
     # Let Gradle download NDK/SDK stuff into ~/Android/Sdk (writable)
@@ -17,8 +20,7 @@ let
 
   # Writable SDK used by ALL projects
   userSdkRoot = "${config.home.homeDirectory}/Android/Sdk";
-in
-{
+in {
   home.packages = with pkgs; [
     nixAndroidSdk
     jdk17
@@ -50,7 +52,7 @@ in
   ];
 
   # Ensure folders exist + provide adb at the path Expo expects
-  home.activation.androidSdkDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.androidSdkDirs = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p "${userSdkRoot}"
     mkdir -p "${userSdkRoot}/cmdline-tools"
     mkdir -p "${userSdkRoot}/platform-tools"

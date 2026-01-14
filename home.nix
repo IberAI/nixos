@@ -4,6 +4,7 @@
     ./home/apps/default.nix
     ./home/dev/default.nix
     ./home/librewolf/default.nix
+    ./home/school/default.nix
   ];
 
   programs.home-manager.enable = true;
