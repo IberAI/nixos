@@ -44,6 +44,7 @@
       nodePackages.typescript-language-server
       nodePackages.vscode-langservers-extracted
       nodePackages.prettier
+      nodePackages.svelte-language-server
 
       # ---- extras (optional but useful) ----
       shfmt
@@ -78,6 +79,7 @@
             "javascript",
             "html", "css",
             "json",
+            "svelte",
             "lua", "vim", "vimdoc",
           },
           highlight = { enable = true },
