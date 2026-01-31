@@ -33,7 +33,6 @@
     udisks2.enable = true;
     gvfs.enable = true;
     upower.enable = true;
-
     pulseaudio.enable = false;
 
     pipewire = {
