@@ -17,7 +17,6 @@
       set -gx PAGER less
       set -gx LESS "-R"
 
-      # Your personal bins (keep these here; Android paths should come from home.sessionPath)
       fish_add_path -g $HOME/.local/bin $HOME/bin
 
       # Colors
@@ -35,6 +34,14 @@
       abbr -a g 'git'
       abbr -a v 'nvim'
       abbr -a n 'nvim'
+
+      # ---- BurnTheShips: run iamb through Tor by default ----
+      function iamb --wraps iamb --description "Run iamb through torsocks"
+        command torsocks iamb $argv
+      end
+
+      # Optional: a short alias/abbr too
+      abbr -a tiamb 'torsocks iamb'
     '';
   };
 }

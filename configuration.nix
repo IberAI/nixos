@@ -31,25 +31,17 @@
   ########################################
   # Tor (client) for torsocks / onion access
   ########################################
+
   services.tor = {
     enable = true;
-
-    # Provides local SOCKS proxy at 127.0.0.1:9050
     client.enable = true;
 
-    # Explicit + safe (local only)
     settings = {
-      SocksPort = ["127.0.0.1:9050"];
-
-      # Optional but useful for some tools
-      DNSPort = ["127.0.0.1:9053"];
-
-      # Optional quality-of-life
+      # Do NOT set SocksPort/DNSPort here when client.enable = true
       AutomapHostsOnResolve = true;
       VirtualAddrNetworkIPv4 = "10.192.0.0/10";
     };
   };
-
   services = {
     printing = {
       enable = true;
