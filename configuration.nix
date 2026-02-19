@@ -29,6 +29,29 @@
   };
 
   services = {
+    printing = {
+      enable = true;
+
+      drivers = with pkgs; [
+        gutenprint
+        hplip
+      ];
+
+      browsing = true;
+
+      browsedConf = ''
+        BrowseRemoteProtocols dnssd
+        BrowseLocalProtocols dnssd
+        CreateIPPPrinterQueues All
+      '';
+    };
+
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+
+      openFirewall = true;
+    };
     blueman.enable = true;
     udisks2.enable = true;
     gvfs.enable = true;
