@@ -162,25 +162,7 @@
         "home-manager": "home-manager",
         "nix4nvchad": "nix4nvchad",
         "nixpkgs": "nixpkgs",
-        "nur": "nur",
-        "sioyek-src": "sioyek-src"
-      }
-    },
-    "sioyek-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1671206761,
-        "narHash": "sha256-GFZaTXJhoBB+rSe7Qk6H6FZJVXr3nO9XgM+LAbS4te4=",
-        "owner": "ahrm",
-        "repo": "sioyek",
-        "rev": "7cb948face57b56ee55224b62d841c316e85294c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ahrm",
-        "ref": "v2.0.0",
-        "repo": "sioyek",
-        "type": "github"
+        "nur": "nur"
       }
     },
     "systems": {
