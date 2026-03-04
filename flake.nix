@@ -23,6 +23,10 @@
       url = "github:nix-community/nix4nvchad";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sioyek-src = {
+      url = "github:ahrm/sioyek/v2.0.0";
+      flake = false;
+    };
   };
 
   outputs = {
