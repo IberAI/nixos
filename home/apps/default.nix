@@ -11,5 +11,7 @@
     mpv
     gimp
     ffmpeg
+    typst
+    tinymist
   ];
 }
