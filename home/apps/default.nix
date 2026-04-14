@@ -6,6 +6,7 @@
   ];
 
   home.packages = with pkgs; [
+    brave
     wireshark
     kicad
     mpv
