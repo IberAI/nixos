@@ -14,5 +14,20 @@
     ffmpeg
     typst
     tinymist
+    openconnect
+    networkmanager-openconnect
+    openssh
+
+    # Ham radio / Yaesu
+    chirp
+    wsjtx
+    fldigi
+    flrig
+    hamlib
+
+    rtl-sdr
+    rtl_433
+    cubicsdr
+    freecad
   ];
 }

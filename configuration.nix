@@ -10,13 +10,12 @@
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
   ];
-
-  ########################################
+ ########################################
   # Bluetooth / power / storage services
   ########################################
   hardware = {
     bluetooth.enable = true;
-
+    rtl-sdr.enable = true;
     graphics = {
       enable = true;
       enable32Bit = true;
@@ -27,7 +26,9 @@
       opencl.enable = true;
     };
   };
-
+    nixpkgs.config.permittedInsecurePackages = [
+      "librewolf-152.0.2-1"
+    ];
   ########################################
   # Tor (client) for torsocks / onion access
   ########################################
@@ -123,7 +124,6 @@
     # IMPORTANT for Android SDK via Nix
     android_sdk.accept_license = true;
   };
-
   ########################################
   # Networking
   ########################################
@@ -134,7 +134,11 @@
   };
 
   virtualisation = {
-    docker.enable = true;
+    docker = {
+      enable = true;
+      package = pkgs.docker_29;
+    };
+
     libvirtd.enable = true; # emulator acceleration (optional)
   };
 
@@ -165,6 +169,7 @@
     isNormalUser = true;
     description = "iber";
     extraGroups = [
+      "dialout"
       "wheel"
       "audio"
       "video"
@@ -173,6 +178,7 @@
       "adbusers"
       "kvm"
       "libvirtd"
+      "plugdev"
     ];
     packages = [];
     shell = pkgs.fish;
