@@ -1,17 +1,24 @@
 {
-  config,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
-    ./settings.nix
     ./profile.nix
     ./policies.nix
   ];
 
-  programs.librewolf = {
+  programs.firefox = {
     enable = true;
-    package = pkgs.librewolf;
-    nativeMessagingHosts = [pkgs.keepassxc];
+    package = pkgs.firefox-bin;
+    nativeMessagingHosts = [ pkgs.keepassxc ];
+  };
+
+  home.file.".local/bin/firefox-profile" = {
+    text = ''
+      #!/usr/bin/env bash
+      exec "${pkgs.firefox-bin}/bin/firefox" "$@"
+    '';
+    executable = true;
   };
 }

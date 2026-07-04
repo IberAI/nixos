@@ -13,6 +13,16 @@ home-path
 # If you ever copy these into the repo by mistake
 .nixos-*-backup
 
+# Plain local/private overrides must not be committed.
+local/
+.sops.yaml
+
+# Encrypted sops files are safe to commit, but plaintext working copies are not.
+secrets/*.plain.*
+secrets/*.dec.*
+secrets/*.local.*
+!secrets/*.example.*
+
 #############
 # direnv
 #############

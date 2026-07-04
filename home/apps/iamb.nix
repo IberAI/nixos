@@ -3,77 +3,68 @@
   pkgs,
   lib,
   ...
-}: {
-  #########################
-  # iamb (Matrix TUI) config
-  #########################
-  # Home Manager will generate:
-  #   ~/.config/iamb/config.toml
-  # via programs.iamb.settings
-  #
-  # Docs:
-  # - Config reference: https://iamb.chat/configure.html
-  # - E2EE verify/keys: https://iamb.chat/e2ee/
-  programs.iamb = {
-    enable = true;
+}:
+{
+  home = {
+    activation.createIambDirs = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+      mkdir -p "$HOME/.config/iamb"
+      mkdir -p "$HOME/Downloads/iamb"
+      mkdir -p "$HOME/Passwords/Matrix"
+    '';
 
-    settings = {
-      # You can name this whatever you want; "main" is a good default
-      default_profile = "main";
+    activation.iambPrivateConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      matrix_user=/run/secrets/matrix/userId
+      matrix_homeserver=/run/secrets/matrix/homeserver
+      target="$HOME/.config/iamb/config.toml"
 
-      profiles.main = {
-        user_id = "@iber:5dlawr4ojnt3x6jkobmrijorrutetyduy2jrswi2fqusfcdllwnpelyd.onion";
-        url = "http://5dlawr4ojnt3x6jkobmrijorrutetyduy2jrswi2fqusfcdllwnpelyd.onion";
-      };
+      if [ -r "$matrix_user" ] && [ -r "$matrix_homeserver" ]; then
+        mkdir -p "$HOME/.config/iamb"
+        {
+          printf 'default_profile = "main"\n\n'
+          printf '[profiles.main]\n'
+          printf 'user_id = "%s"\n' "$(cat "$matrix_user")"
+          printf 'url = "%s"\n\n' "$(cat "$matrix_homeserver")"
+          printf '[settings]\n'
+          printf 'request_timeout = 180\n'
+          printf 'username_display = "displayname"\n'
+          printf 'read_receipt_display = true\n'
+          printf 'read_receipt_send = true\n'
+          printf 'typing_notice_display = true\n'
+          printf 'typing_notice_send = true\n\n'
+          printf '[settings.image_preview]\n'
+          printf 'protocol.type = "kitty"\n\n'
+          printf '[dirs]\n'
+          printf 'downloads = "%s/Downloads/iamb"\n' "$HOME"
+        } > "$target"
+        chmod 0600 "$target"
+      fi
+    '';
 
-      # iamb behavior defaults
-      settings = {
-        # Helps on slow networks / large first syncs
-        request_timeout = 180;
+    file.".config/iamb/private-profile.example.toml".text = ''
+      default_profile = "main"
 
-        # Show names nicely (valid: "username" | "localpart" | "displayname")
-        username_display = "displayname";
+      [profiles.main]
+      user_id = "@you:matrix.example.org"
+      url = "https://matrix.example.org"
 
-        # Typical “feels like a normal messenger” behavior
-        read_receipt_display = true;
-        read_receipt_send = true;
-        typing_notice_display = true;
-        typing_notice_send = true;
+      [settings]
+      request_timeout = 180
+      username_display = "displayname"
+      read_receipt_display = true
+      read_receipt_send = true
+      typing_notice_display = true
+      typing_notice_send = true
 
-        # Uncomment for troubleshooting:
-        # log_level = "debug";
-      };
+      [settings.image_preview]
+      protocol.type = "kitty"
 
-      # Optional: keep downloads organized
-      dirs = {
-        downloads = "${config.home.homeDirectory}/Downloads/iamb";
-      };
+      [dirs]
+      downloads = "${config.home.homeDirectory}/Downloads/iamb"
+    '';
 
-      # Optional: image previews (only enable if you use a supported terminal)
-      # See: https://iamb.chat/terminals.html
-      settings.image_preview = {
-        protocol = {type = "kitty";};
-      };
-    };
+    packages = with pkgs; [
+      iamb
+      xdg-utils
+    ];
   };
-
-  #########################
-  # Dirs / activation helpers
-  #########################
-  home.activation.createIambDirs = lib.hm.dag.entryBefore ["writeBoundary"] ''
-    mkdir -p "$HOME/.config/iamb"
-    mkdir -p "$HOME/Downloads/iamb"
-    # Handy place for E2EE key exports (optional):
-    mkdir -p "$HOME/Passwords/Matrix"
-  '';
-
-  #########################
-  # Install extras (optional)
-  #########################
-  # iamb itself is installed by programs.iamb.enable.
-  # Add extra helpful tools here if you want them available:
-  home.packages = with pkgs; [
-    # e.g. for opening links from terminal
-    xdg-utils
-  ];
 }

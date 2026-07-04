@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   services.dunst = {
     enable = true;
     package = pkgs.dunst;
@@ -35,7 +36,7 @@
         icon_position = "left";
         max_icon_size = 32;
 
-        browser = "${pkgs.librewolf}/bin/librewolf";
+        browser = "${config.home.homeDirectory}/.local/bin/firefox-profile";
       };
 
       urgency_low = {

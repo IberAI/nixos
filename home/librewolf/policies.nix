@@ -1,10 +1,9 @@
 {
-  config,
-  pkgs,
   lib,
   ...
-}: {
-  programs.librewolf.policies = {
+}:
+{
+  programs.firefox.policies = {
     ##############################################################
     # De-bloat & privacy hardening
     ##############################################################
@@ -148,7 +147,7 @@
     };
 
     ##############################################################
-    # Remove Firefox/LibreWolf clutter
+    # Firefox clutter
     ##############################################################
     FirefoxHome = {
       Search = true;

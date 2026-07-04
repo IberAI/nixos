@@ -1,7 +1,9 @@
-{pkgs, ...}: let
+{ config, pkgs, ... }:
+let
   mod = "Mod4"; # Super
   inherit (builtins) toString;
-in {
+in
+{
   #############################
   # Sway WM
   #############################
@@ -11,11 +13,11 @@ in {
     # Required so that systemd user services inherit WAYLAND_DISPLAY etc.
     wrapperFeatures.gtk = true;
     systemd.enable = true;
-    systemd.variables = ["--all"];
+    systemd.variables = [ "--all" ];
 
     config = {
       modifier = mod;
-      bars = [];
+      bars = [ ];
       terminal = "${pkgs.kitty}/bin/kitty";
 
       # Use rofi as the default menu (Mod+d)
@@ -34,14 +36,18 @@ in {
       ##################################
       # Keybindings
       ##################################
-      keybindings = let
-        mkWS = num: let
-          n = toString num;
-        in {
-          "${mod}+${n}" = "workspace number ${n}";
-          "${mod}+Shift+${n}" = "move container to workspace number ${n}";
-        };
-      in
+      keybindings =
+        let
+          mkWS =
+            num:
+            let
+              n = toString num;
+            in
+            {
+              "${mod}+${n}" = "workspace number ${n}";
+              "${mod}+Shift+${n}" = "move container to workspace number ${n}";
+            };
+        in
         mkWS 1
         // mkWS 2
         // mkWS 3
@@ -56,7 +62,7 @@ in {
           # Explicit rofi launcher on Mod+r
           "${mod}+r" = "exec ${pkgs.rofi}/bin/rofi -show drun";
 
-          "${mod}+f" = "exec ${pkgs.librewolf}/bin/librewolf";
+          "${mod}+f" = "exec ${config.home.homeDirectory}/.local/bin/firefox-profile";
 
           # Window management
           "${mod}+q" = "kill";
@@ -67,7 +73,8 @@ in {
           "${mod}+l" = "exec ${pkgs.swaylock-effects}/bin/swaylock -f -c 000000";
 
           # Screenshot (region → file + clipboard)
-          "${mod}+p" = "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
+          "${mod}+p" =
+            "exec ${pkgs.bash}/bin/sh -c 'FILE=\"$HOME/Pictures/ScreenShots/screenshot-$(date +%Y-%m-%d-%H%M%S).png\"; ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" \"$FILE\"; ${pkgs.wl-clipboard}/bin/wl-copy < \"$FILE\"'";
 
           # Output navigation
           "${mod}+a" = "focus left";
@@ -139,7 +146,7 @@ in {
 
     sessionVariables = {
       GTK_USE_PORTAL = "1"; # better GTK behaviour on Wayland
-      MOZ_ENABLE_WAYLAND = "1"; # Firefox/Librewolf Wayland support
+      MOZ_ENABLE_WAYLAND = "1"; # Firefox Wayland support
       QT_QPA_PLATFORM = "wayland"; # Qt apps on Wayland
     };
   };

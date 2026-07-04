@@ -2,9 +2,11 @@
   pkgs,
   lib,
   ...
-}: let
-  iniFormat = pkgs.formats.ini {};
-in {
+}:
+let
+  iniFormat = pkgs.formats.ini { };
+in
+{
   #########################
   # KeePassXC config (INI)
   #########################
@@ -33,7 +35,7 @@ in {
     ];
 
     # Ensure directory exists for KeePassXC config
-    activation.createKeepassxcDir = lib.hm.dag.entryBefore ["writeBoundary"] ''
+    activation.createKeepassxcDir = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
       mkdir -p "$HOME/.config/keepassxc"
     '';
 
@@ -49,14 +51,5 @@ in {
       X-GNOME-Autostart-enabled=true
     '';
 
-    # Librewolf native-messaging bridge
-    # Create (or update) a symlink:
-    #   ~/.librewolf/native-messaging-hosts -> ~/.mozilla/native-messaging-hosts
-    activation.librewolfKeePassSymlink = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      mkdir -p "$HOME/.librewolf"
-      mkdir -p "$HOME/.mozilla/native-messaging-hosts"
-      ln -sfn "$HOME/.mozilla/native-messaging-hosts" \
-              "$HOME/.librewolf/native-messaging-hosts"
-    '';
   };
 }

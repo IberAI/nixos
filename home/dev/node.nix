@@ -2,9 +2,11 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   homeDir = config.home.homeDirectory;
-in {
+in
+{
   home = {
     packages = with pkgs; [
       nodejs

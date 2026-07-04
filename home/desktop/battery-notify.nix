@@ -1,4 +1,5 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   batteryNotify = pkgs.writeShellApplication {
     name = "battery-notify";
     runtimeInputs = [
@@ -9,15 +10,22 @@
     ];
     text = builtins.readFile ./scripts/battery-notify.sh;
   };
-in {
+in
+{
   systemd.user.startServices = "sd-switch";
 
   systemd.user.services.battery-notify = {
     Unit = {
       Description = "Battery notifications via dunstify (event-driven)";
-      After = ["graphical-session.target" "dunst.service"];
-      Wants = ["graphical-session.target" "dunst.service"];
-      PartOf = ["graphical-session.target"];
+      After = [
+        "graphical-session.target"
+        "dunst.service"
+      ];
+      Wants = [
+        "graphical-session.target"
+        "dunst.service"
+      ];
+      PartOf = [ "graphical-session.target" ];
     };
 
     Service = {
@@ -28,7 +36,7 @@ in {
     };
 
     Install = {
-      WantedBy = ["graphical-session.target"];
+      WantedBy = [ "graphical-session.target" ];
     };
   };
 }

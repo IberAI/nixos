@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.emacs = {
     enable = true;
     package = pkgs.emacs-gtk;
@@ -55,8 +56,7 @@
   '';
 
   # Ensure Emacs loads it
-  home.file.".emacs.d/init.el".source =
-    config.xdg.configFile."emacs/init.el".source;
+  home.file.".emacs.d/init.el".source = config.xdg.configFile."emacs/init.el".source;
 
   home.file.".emacs.d/.keep".text = "";
 }

@@ -1,8 +1,8 @@
 {
-  config,
   pkgs,
   ...
-}: {
+}:
+{
   # You already have gpg-agent SSH support enabled at the NixOS level:
   # programs.gnupg.agent.enableSSHSupport = true;
   # So skip a separate ssh-agent here to avoid conflicts.
@@ -28,7 +28,7 @@
       "github.com" = {
         hostname = "github.com";
         user = "git";
-        identityFile = ["~/.ssh/id_ed25519"];
+        identityFile = [ "~/.ssh/id_ed25519" ];
         identitiesOnly = true;
 
         extraOptions = {

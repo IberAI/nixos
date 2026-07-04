@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.sioyek = {
     enable = true;
     package = pkgs.sioyek;
@@ -19,7 +20,7 @@
   };
 
   # Optional: make sure config dir exists (safe)
-  home.activation.createSioyekDir = lib.hm.dag.entryBefore ["writeBoundary"] ''
+  home.activation.createSioyekDir = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
     mkdir -p "$HOME/.config/sioyek"
   '';
 }

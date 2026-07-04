@@ -1,8 +1,8 @@
 {
-  config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.waybar = {
     enable = true;
     systemd = {
@@ -16,16 +16,25 @@
         position = "top";
         height = 28;
 
-        modules-left = ["sway/workspaces"];
-        modules-center = ["clock"];
-        modules-right = ["cpu" "memory" "network" "backlight" "pulseaudio" "battery"];
+        modules-left = [ "sway/workspaces" ];
+        modules-center = [ "clock" ];
+        modules-right = [
+          "cpu"
+          "memory"
+          "network"
+          "backlight"
+          "pulseaudio"
+          "battery"
+        ];
 
         "sway/workspaces" = {
           disable-scroll = true;
           format = "{name}";
         };
 
-        clock = {format = "{:%Y-%m-%d %H:%M}";};
+        clock = {
+          format = "{:%Y-%m-%d %H:%M}";
+        };
 
         cpu = {
           format = "CPU {usage}%";

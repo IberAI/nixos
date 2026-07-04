@@ -1,9 +1,10 @@
-{lib, ...}: {
+{ lib, ... }: {
   imports = [
     ./home/desktop/default.nix
     ./home/apps/default.nix
     ./home/dev/default.nix
     ./home/librewolf/default.nix
+    ./home/radio/default.nix
     ./home/school/default.nix
   ];
 
@@ -16,7 +17,7 @@
     username = "iber";
     homeDirectory = "/home/iber";
 
-    activation.createBaseDirs = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    activation.createBaseDirs = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       mkdir -p "$HOME"/{Development,Tools,Documents,Downloads,Pictures,Videos,Passwords,School}
       mkdir -p "$HOME"/Pictures/ScreenShots
     '';

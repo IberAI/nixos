@@ -7,20 +7,11 @@
 #
 {
   pkgs,
-  lib,
   ...
-}: let
+}:
+let
   # Temurin JDK 21 (try common attribute names across nixpkgs versions)
-  temurin21 =
-    if pkgs ? "temurin-bin-21"
-    then pkgs."temurin-bin-21"
-    else if
-      pkgs ? javaPackages
-      && pkgs.javaPackages ? compiler
-      && pkgs.javaPackages.compiler ? temurin-bin
-      && pkgs.javaPackages.compiler.temurin-bin ? "jdk-21"
-    then pkgs.javaPackages.compiler.temurin-bin."jdk-21"
-    else null;
+  temurin21 = pkgs."temurin-bin-21" or (pkgs.javaPackages.compiler.temurin-bin."jdk-21" or null);
 
   eclipse = pkgs.eclipses.eclipse-java;
 
@@ -38,7 +29,8 @@
     export PATH="${temurin21}/bin:$PATH"
     exec "${eclipse}/bin/eclipse" "$@"
   '';
-in {
+in
+{
   assertions = [
     {
       assertion = temurin21 != null;
